@@ -920,7 +920,7 @@
   ],
   "answered": [
     "A bureau is just a target audience and a user like any other. No Team or Organization class. Tier keeps the name bureau only as the audience a model is made for.",
-    "Exports are unlimited for as long as the account exists, so Purchase has no export limit or counter (this settles Plan Open 5). The cost is storage, handled by removing old zips and rendering again on request.",
+    "Exports are unlimited for as long as the account exists, so Purchase has no export limit or counter. This is Khairou's proposal for Plan Open 5, which Said has not confirmed yet; if he chooses a limit, a counter comes back. The cost is storage, handled by removing old zips and rendering again on request.",
     "EmailReceipt and AuditEvent are kept.",
     "A top-up records how it was paid as its own fields (method and reference). Said sets it by hand at first and the payment service sets it automatically later.",
     "Payment methods Said accepts today: cash, bank transfer, CCP and Baridimob or Edahabia. They are the PaymentMethod list, with other, and online added later.",
