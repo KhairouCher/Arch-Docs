@@ -1,0 +1,476 @@
+{
+  "meta": {
+    "project": "ArchPresent",
+    "summary": "ArchPresent turns Photoshop architecture-presentation templates into templates that people edit in the browser, then exports print-ready pages. This Blueprint describes what exists today (a working converter and editor, plus a placeholder website) and how each part grows into the platform described in the Plan. Each card states its current truth. Status says how much of it exists.",
+    "principles": [
+      "Speed first",
+      "Print quality is never traded",
+      "The clean image never leaves the server unpaid",
+      "Preview in the browser, final render on the server",
+      "Drafts survive power cuts",
+      "Layer names are the contract"
+    ]
+  },
+  "parts": [
+    {
+      "letter": "A",
+      "title": "Foundations",
+      "sections": [
+        {
+          "id": "B-01",
+          "title": "Platform architecture",
+          "intro": "Two repositories today: web/ (the Next.js editor and website) and scripts/ (the PSD converter). The target adds a backend with its own database and Python workers. Nothing is hosted yet.",
+          "cards": [
+            {
+              "title": "Target architecture",
+              "status": "planned",
+              "how": "The browser runs the editor on small preview images. A web backend handles accounts, models, drafts and buy requests. The database, sign-in and file storage run on our own server (hosting still to be chosen). Two job queues feed Python workers: one converts PSDs, one renders final exports. Both queues cap how many jobs run at once.",
+              "tech": "Next.js 16 and React 19 (exist). PostgreSQL, our own sign-in (email and password, plus Google) and file storage on one server (hosting not chosen). Python workers using psd-tools and Pillow (the converter exists). Resend for email (receipts, confirmations and password resets).",
+              "limits": "Today there is no backend. The website reads templates from the disk, sign-in and payment are stored in the browser, and nothing is hosted.",
+              "future": "Add workers when the queues get long. Open the conversion queue to designers. Add a card payment provider behind the same buy-request flow.",
+              "light": "One web app, one database, one worker that handles both conversion and export.",
+              "decisions": [
+                { "choice": "Build a custom app on our own backend.", "alt": "WordPress with WooCommerce.", "why": "The product is the editor, converter, drafts and server export, none of which WooCommerce provides, so it would mean two systems with linked logins. At launch the commerce is only a buy request and a paid flag. WooCommerce is worth revisiting when card payment and designer commissions arrive." },
+                { "choice": "Run the database, sign-in and storage ourselves on one server.", "alt": "A managed backend service.", "why": "Khairou's working direction: one server is easy to try for a month and easy to leave. The tradeoff is more to maintain, so file storage goes behind one small layer to keep a later move cheap. Hosting is still to be chosen." },
+                { "choice": "Keep the Python converter as a worker.", "alt": "Port it to Node.", "why": "It already works and psd-tools has no equal in Node. The earlier Node approach was replaced by psd-tools." }
+              ],
+              "links": ["P-4.4", "P-5.12", "P-5.24"]
+            }
+          ]
+        },
+        {
+          "id": "B-02",
+          "title": "Data model",
+          "intro": "Planned entities. Only templates exist today, as files.",
+          "cards": [
+            {
+              "title": "Entities",
+              "status": "partial",
+              "how": "User (role: buyer, admin or designer; email and password and Google sign-in; a deleted account keeps an emptied row). Sign-in link (confirm an address, reset a password). Template page (canvas size, preview and full-resolution asset locations, review status). Model (name, tier, price, ordered list of pages, published or not). Draft (user, model, saved edits, last saved, expiry one month later). Points ledger (one row per change: user, amount, kind such as top-up, purchase or adjustment, reason, how a top-up was paid, who made it, when; the balance is the sum). Top-up bundle (price in DA, points). Purchase (user, model, points spent; exports are unlimited). Photo (uploaded into a draft). Conversion job (PSD, status, queued time, expected finish). Export (purchase, zip location, kept 7 days). Email receipt and audit event.",
+              "tech": "Relational tables in PostgreSQL. Files (PSDs, assets, zips, draft photos) in object storage, referenced by path.",
+              "limits": "Models are currently static files (public/models/<id>.json) with a name and a list of pages. Nothing is stored per user. The class model is on the Backend Model page and every table is drafted in web/db/schema.sql (H-2026-10-19-3, updated H-2026-10-19-23). It was loaded and tested in PGlite, an in-process PostgreSQL (54 checks pass, H-2026-10-19-24), but not yet on a real PostgreSQL server, which also needs a test of two simultaneous spends.",
+              "future": "Designer, commission and price-proposal tables. A schema version on templates so old ones keep working.",
+              "light": "User, model, page, draft and buy request. Everything else can follow.",
+              "decisions": [
+                { "choice": "A draft stores edits only (text, photo position and fit, layer order) plus references to uploaded photos.", "alt": "Store rendered images.", "why": "Edits are small, and a draft can be re-rendered at any resolution." },
+                { "choice": "The database is PostgreSQL.", "alt": "SQLite, a single file next to the app.", "why": "Khairou kept PostgreSQL. The money rules (credit_points, spend_points, delete_account) already live in the tested schema, a row lock serializes spends, and it leaves room to grow past one machine. SQLite would have meant no database server to run, at the price of moving those rules into app code and tying the data to one machine." },
+                { "choice": "A balance is the sum of an append-only ledger.", "alt": "A balance number that gets overwritten.", "why": "Every change is traceable, and a mistake or refund shows up as its own row." }
+              ],
+              "links": ["P-5.6", "P-5.14", "P-5.16", "P-5.25", "P-5.26"]
+            }
+          ]
+        },
+        {
+          "id": "B-03",
+          "title": "Template format",
+          "intro": "What the converter writes and the editor reads. One folder per template page.",
+          "cards": [
+            {
+              "title": "template.json and its assets",
+              "status": "built",
+              "how": "template.json holds the canvas size and source file name, a tree of layers (each with stacking order, bounds, visibility, opacity and an image file) and a list of placeholders (id, type, bounds, mask file, shadow file, default text). Static art is flattened into layers/NNN_name.png. Each mask becomes clips/clip_<id>.png, and a shadow becomes clips/shadow_<id>.png.",
+              "tech": "JSON and full-resolution PNG files, all at the PSD's own canvas size. A one-page template is about 60 MB.",
+              "limits": "Only full-resolution images exist, so the editor downloads and downscales them, which is heavy. There is no schema version field. Generated folders are not in git and are copied by hand into web/public/templates/.",
+              "future": "Add a small preview set (B-09) and a schema version. Move assets to object storage.",
+              "decisions": [
+                { "choice": "Generated template folders stay out of git.", "alt": "Commit them.", "why": "60 MB or more per template bloats the repo, and there was nowhere to publish them yet. Local rollback copies are kept by scripts/backup_template.sh (the 2 latest per template). The 60 MB template that had been committed early on was removed from web/'s history before the first push (T-037)." }
+              ],
+              "links": ["P-5.4", "P-5.10"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "letter": "B",
+      "title": "The converter",
+      "sections": [
+        {
+          "id": "B-04",
+          "title": "Layer naming convention",
+          "cards": [
+            {
+              "title": "Tokens in layer names",
+              "status": "built",
+              "how": "[PHOTO:id], [PLAN:id], [MODEL:id] and [LOGO:id] mark editable image zones. [TEXT:id] marks a text zone and takes the layer's own text as the default. [MASK:id] is the shape that clips the zone with the same id, and the source of its shadow. Matching ignores case, ids may contain letters, digits, spaces, underscore and hyphen. Zones can sit inside groups, and the converter finds them recursively.",
+              "tech": "Regular expressions in scripts/psd-to-json.py (PLACEHOLDER_RE, MASK_RE).",
+              "limits": "The converter itself still flattens a layer whose name does not match as static art, so a typo gives a template that looks fine but has a missing zone. scripts/validate_names.py catches this before conversion (misspelled tokens with a suggestion, bad or duplicate ids, masks with no zone, zones with no mask, hidden or empty zone layers), but it is a separate step: nothing runs it automatically yet. Of the 16 PSDs in the project, only 11.psd is a finished template (H-2026-10-19-1).",
+              "future": "Run the validator automatically when a PSD is uploaded, and show its messages to the uploader (T-013).",
+              "light": "Run validate_names.py by hand before each conversion.",
+              "decisions": [],
+              "links": ["P-5.12"]
+            }
+          ]
+        },
+        {
+          "id": "B-05",
+          "title": "Flattening and compositing",
+          "cards": [
+            {
+              "title": "Static art and nested zones",
+              "status": "built",
+              "how": "Every top-level layer or group that is not a zone is composited into one PNG on the full canvas. A zone nested in a group is cut out of that group's own image so it stays editable. To render one layer alone, the converter filters by that layer's name and the names of its ancestors and children.",
+              "tech": "psd-tools composite with a layer filter, Pillow for pasting.",
+              "limits": "The filter skips a whole subtree when any ancestor fails it, so the ancestors must always be included. Very large PSDs (up to about 500 MB) use a lot of memory. A one-page template took about 3 minutes in a local test.",
+              "future": "Run in a worker with a memory limit and a timeout. Report progress for the queue.",
+              "decisions": [
+                { "choice": "Flatten everything that is not a zone.", "alt": "Export every layer separately.", "why": "Far fewer files and faster editor loading." }
+              ],
+              "links": ["P-4.4"]
+            }
+          ]
+        },
+        {
+          "id": "B-06",
+          "title": "Masks and drop shadows",
+          "cards": [
+            {
+              "title": "Clip masks and shadows",
+              "status": "built",
+              "how": "Each [MASK:id] layer becomes a clip image the editor uses to cut the buyer's photo. If the mask has a Drop Shadow style, the shadow is drawn separately so it can sit behind whatever photo the buyer adds. The converter re-renders it by offsetting, blurring and tinting the mask's own alpha.",
+              "tech": "psd-tools reads the style parameters but does not render them. Constants SHADOW_COLOR (flat black) and SHADOW_OPACITY_BOOST (1.8) sit at the top of the script.",
+              "limits": "Only Drop Shadow is re-rendered. Other layer effects depend on what psd-tools composites. The shadow color and strength are set by the script, not read from the PSD.",
+              "future": "More effects if designers need them.",
+              "decisions": [
+                { "choice": "Override the shadow color and strength.", "alt": "Use the PSD's own values.", "why": "They rendered too dim against most backgrounds." },
+                { "choice": "Paste the shadow without a mask argument, and flip the angle by 180 degrees.", "alt": "Paste with the shadow as its own mask.", "why": "Using it as its own mask squared the alpha and crushed the shadow. Photoshop stores the light direction, not the shadow direction." }
+              ],
+              "links": ["P-5.4"]
+            }
+          ]
+        },
+        {
+          "id": "B-07",
+          "title": "Cloud conversion queue",
+          "cards": [
+            {
+              "title": "Queue and the fast path",
+              "status": "planned",
+              "how": "An admin uploads a PSD. A job enters the queue and a worker runs the converter. The expected time shown to the uploader is the work already queued plus its own estimate (about 15 minutes per model). Khairou's fast path skips the queue: he runs the converter on his own PC and uploads the output, which must match the same folder format.",
+              "tech": "Job table plus a worker process running scripts/psd-to-json.py. Object storage for the PSD and the output.",
+              "limits": "The converter is single-threaded Python. One long job blocks a worker. Hosting for a worker that handles PSDs of several hundred MB is not chosen yet.",
+              "future": "Open the same queue to designers. Add workers when waits grow.",
+              "light": "One worker and a table of jobs with a status column.",
+              "decisions": [
+                { "choice": "The expected time is computed from the queue.", "alt": "Show only a position number.", "why": "A time lets a designer plan, and matches the Plan's example of 5 hours 15 minutes." }
+              ],
+              "links": ["P-4.4", "P-5.12", "P-5.18", "P-5.24"]
+            }
+          ]
+        },
+        {
+          "id": "B-08",
+          "title": "Design rules and validation",
+          "cards": [
+            {
+              "title": "Resolution and complexity rules",
+              "status": "planned",
+              "how": "Every design must respect a required canvas width and height, a DPI, and complexity rules, plus the naming convention. A check runs before conversion and rejects a file with a clear reason.",
+              "tech": "A validator step in the worker, reading the PSD header and layer tree.",
+              "limits": "The actual numbers are not set yet (Open 2). All 15 existing design files are 9933 x 7016 px at 300 DPI (A1 landscape), the natural rule to propose. validate_names.py already accepts --min-width, --min-height and --dpi, and --json for a worker.",
+              "future": "An AI reviewer for designs is listed for later (P-5.23).",
+              "light": "Check canvas size and the naming convention only.",
+              "decisions": [],
+              "links": ["P-5.12", "P-5.23"]
+            }
+          ]
+        },
+        {
+          "id": "B-09",
+          "title": "Preview asset set",
+          "cards": [
+            {
+              "title": "Small previews for the browser",
+              "status": "partial",
+              "how": "Besides the full-resolution images, the converter also writes a set scaled to the editor's preview width (about 1800 px). The browser only ever gets this set. The full-resolution set stays in server storage for export.",
+              "tech": "A resize pass in the converter. Two storage locations with different access rules.",
+              "limits": "The converter now writes the set itself (scripts/make_previews.py, 62.4 MB became 5.4 MB) and records it in template.json as meta.previews. The editor loads it when present: measured on the real template, 28.3 MB and 3.6 s became 5.4 MB and 0.4 s, while the redraw after an edit stayed at about 20 ms (H-2026-10-19-10). Export still loads the full-size files in the browser, on demand, so its memory peak is unchanged until the server renders exports (T-023). Loading from cloud storage by URL waits for the backend (T-017).",
+              "future": "Tiled or progressive previews if pages get larger.",
+              "decisions": [
+                { "choice": "Browsers never receive full-resolution assets.", "alt": "Serve everything and watermark in the browser.", "why": "It keeps the clean image from unpaid users and fixes load time." }
+              ],
+              "links": ["P-5.9", "P-5.10"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "letter": "C",
+      "title": "The editor",
+      "sections": [
+        {
+          "id": "B-10",
+          "title": "Canvas rendering",
+          "cards": [
+            {
+              "title": "Drawing a page",
+              "status": "built",
+              "how": "All layers, photo zones and text boxes are sorted by stacking order and drawn onto one canvas. A buyer's photo is drawn inside its mask. A zone with no photo shows the mask's own look with a low-opacity color tint. Preview width is capped at 1800 px, so the canvas is the same size whatever the template's size. Requests to redraw are merged into one per tick.",
+              "tech": "Canvas 2D in web/app/editor/page.jsx and lib/canvas.js. Merging uses setTimeout, because requestAnimationFrame is paused in hidden tabs.",
+              "limits": "Every edit redraws every layer. Speed is not at the target the Plan wants (Open 3). Images are drawn from full-resolution files (B-09).",
+              "future": "Cache static layers into one image. Use preview assets. Move drawing to an offscreen canvas.",
+              "decisions": [
+                { "choice": "Scale the preview by width.", "alt": "Scale by height.", "why": "A height cap made this template draw about 3.7 times more pixels." }
+              ],
+              "links": ["P-5.4"]
+            }
+          ]
+        },
+        {
+          "id": "B-11",
+          "title": "Photo zones",
+          "cards": [
+            {
+              "title": "Placing and adjusting photos",
+              "status": "partial",
+              "how": "A buyer uploads a photo into a zone, chooses fit or fill, and drags to pan. Only the visible shape of the mask responds to clicks, not its bounding rectangle. An empty zone shows a dashed outline that follows the mask's real shape.",
+              "tech": "Moore-neighbor contour tracing on a 400 px version of the mask, cached on load, scaled to any size.",
+              "limits": "The calculation for photos too small to print at A0 exists and is tested (lib/printQuality.js, H-2026-10-19-4), but the editor does not show the warning yet (P-5.5). The 200 and 120 dpi thresholds are placeholders. No zoom, crop or rotate.",
+              "future": "Resolution warning based on the zone's printed size. Zoom.",
+              "light": "Compare the photo's pixel size with the zone's size at the template's canvas scale and warn below a threshold.",
+              "decisions": [],
+              "links": ["P-5.4", "P-5.5"]
+            }
+          ]
+        },
+        {
+          "id": "B-12",
+          "title": "Text boxes",
+          "cards": [
+            {
+              "title": "Editing text on the canvas",
+              "status": "partial",
+              "how": "Each text zone has content, font (8 choices: Arial, then seven bundled open fonts), size, bold, italic, color (black by default) and alignment. The buyer drags it and resizes its width with a handle on the right edge. The box and handle only show while the text is selected. Wrapping and hit-testing share one width, so what you click is what is drawn.",
+              "tech": "wrapText and getTextBounds in lib/canvas.js. Seven open-licensed fonts (Inter, Montserrat, Barlow Condensed, Playfair Display, Cormorant Garamond, Cairo, Amiri) ship in web/public/fonts, declared in app/fonts.css and loaded before the canvas draws or exports (loadFonts in lib/canvas.js).",
+              "limits": "Arial, the default, is still the viewer's system font, so it can differ between machines. Arabic text draws joined and right to left: the base direction comes from the first strong letter (textDirection in lib/canvas.js) and the text box types right to left (H-2026-10-19-11).. Cairo and Amiri cover Arabic glyphs (T-021).",
+              "future": "Point the server export at the same font files (B-16), and replace Arial as the default.",
+              "decisions": [],
+              "links": ["P-5.4", "P-5.11"]
+            }
+          ]
+        },
+        {
+          "id": "B-13",
+          "title": "Layer order",
+          "cards": [
+            {
+              "title": "Sidebar layer list",
+              "status": "built",
+              "how": "The list sits on the right of the editor and shows only the layers a buyer can edit (photo, plan, 3D model, logo, text), top to bottom. A row shows just its type and name until it is selected, by clicking the row or its zone or text on the canvas. A selected row shows its actions: up and down buttons, fit and fill, upload and remove, the print quality line, the text controls. Up and down and drag and drop reorder the editable layers, with a thick white line showing where a layer will land, snapping to the nearest half position. Static layers keep their own place in the stacking order.",
+              "tech": "LayerRow, TextLayerRow and PlaceholderOverlay components, with stacking order stored per layer.",
+              "limits": "Reordering is not saved anywhere yet.",
+              "future": "Saved with the draft (B-17).",
+              "decisions": [
+                { "choice": "Buyers can reorder layers.", "alt": "Lock the design.", "why": "Khairou decided it stays." }
+              ],
+              "links": ["P-5.4"]
+            }
+          ]
+        },
+        {
+          "id": "B-14",
+          "title": "Models and pages",
+          "cards": [
+            {
+              "title": "Multi-page navigation",
+              "status": "partial",
+              "how": "/editor?model=<id> reads public/models/<id>.json (a name and a list of pages, each pointing at a template). A large title shows the model name with the page name in brackets, and arrows at the far left and right of the canvas move between pages. Edits on a page are kept in memory when the buyer leaves it. The older /editor?template=<id> still works as a one-page model.",
+              "tech": "loadPage in page.jsx fetches a page's template.json, swaps the image caches and restores that page's saved state.",
+              "limits": "Edits live in memory only and vanish on reload. Models come from a static file, not the database. Export covers only the open page. The only sample model repeats one template.",
+              "future": "Database-backed models with a tier and price. Save with drafts. Export every page.",
+              "decisions": [
+                { "choice": "Swap the title and canvas together after the next page has loaded.", "alt": "Switch immediately.", "why": "Avoids the title and canvas disagreeing." }
+              ],
+              "links": ["P-5.3", "P-5.14"]
+            }
+          ]
+        },
+        {
+          "id": "B-15",
+          "title": "Watermark and unlock",
+          "cards": [
+            {
+              "title": "Watermark and buying with points (prototype)",
+              "status": "partial",
+              "how": "Models the signed-in buyer has not bought get a tiled diagonal watermark with a deterministic offset per row (so it does not flicker and is harder to crop out). Pressing export opens a dialog: the buyer must view every page first, then Buy takes the model's price in points from the balance. That removes the watermark and runs the export. Too few points shows how many are missing and a link to the wallet. No card fields anywhere.",
+              "tech": "drawWatermark in lib/canvas.js. BuyModal.jsx. lib/mockStore.js keeps users, the points ledger and purchases in localStorage, with the same rules as web/db/schema.sql (append only, no negative balance, buying twice charges once).",
+              "limits": "All of it runs in the browser, so anyone can bypass it in devtools, and the full-resolution files can be loaded by anyone. A purchase allows unlimited exports (Plan Open 5, answered), so the prototype keeps no export count. The earlier mock dialog, mockPayment.js and pricing.js were deleted (H-2026-10-19-18).",
+              "future": "The server holds the unlock. The browser only shows the watermark and the buy button. Spending points unlocks the export (B-21).",
+              "decisions": [
+                { "choice": "No card number fields anywhere in the app.", "alt": "Build a card form.", "why": "Raw card data should never touch this code. A hosted checkout is the right way when card payment arrives." }
+              ],
+              "links": ["P-5.9", "P-5.16"]
+            }
+          ]
+        },
+        {
+          "id": "B-16",
+          "title": "Export",
+          "cards": [
+            {
+              "title": "Final render",
+              "status": "partial",
+              "how": "Today the browser draws the single open page at full resolution on a temporary canvas and downloads a PNG or a JPG (quality 0.95). Target: a paid export becomes a server job that renders every page from the saved draft and the full-resolution assets, then returns one zip. While the browser export runs, a dialog shows the stage (loading the full-size images, rendering, writing the file), a progress bar and the expected time left, which comes from the speed of the last exports per megapixel of the page.",
+              "tech": "Today: canvas.toBlob. Target: a render worker, drawing in horizontal strips so memory per job stays small, with the finished zip stored for re-download.",
+              "limits": "The progress bar moves between stages, not inside them: rendering and encoding block the page and cannot report progress, so the time left is an estimate that is rough on the first export (a placeholder default of 150 ms per megapixel, then the browser remembers its own speed). A single 10000 x 7000 px page is about 280 MB in memory before compositing. Browsers cannot reliably do this for 6 or 7 pages. The server needs the same fonts and drawing rules as the editor, or the export will not match the preview.",
+              "future": "More workers when exports queue up. Real progress from the server job, with a queue position when jobs wait.",
+              "light": "Keep a headless browser running the editor's own drawing code, which avoids writing the drawing twice but is heavier.",
+              "decisions": [
+                { "choice": "Render exports on the server through a queue.", "alt": "Render in the browser.", "why": "Memory limits, and the clean image never reaches unpaid users. The cost is two renderers that must agree." }
+              ],
+              "links": ["P-5.10", "P-5.9"]
+            }
+          ]
+        },
+        {
+          "id": "B-17",
+          "title": "Drafts and autosave",
+          "cards": [
+            {
+              "title": "Local first, then sync",
+              "status": "partial",
+              "how": "Every few seconds the editor saves the buyer's edits to the browser's own storage, so a power or internet cut loses almost nothing even offline. When the connection is back they are sent to the server. Uploaded photos go to object storage. A draft is deleted a month after its last save, and the buyer is told so when saving. Built so far, in the browser only: for a signed-in user the editor saves the edits about 1.5 seconds after the last change and when the tab is hidden or closed, and the photos go to IndexedDB. Opening the model restores the draft on the page the user left, with a Start over link. The editor shows when it saved and until when the draft is kept. The dashboard lists the drafts with Open and Delete, and drafts older than a month are removed with their photos. A visitor who is not signed in sees a prompt to sign in to save.",
+              "tech": "IndexedDB in the browser. A drafts table and a storage folder per user on the server. A scheduled job deletes expired drafts and their photos.",
+              "limits": "Today the draft stays in this browser: it is not shared between devices and nothing is sent to a server. The prototype keeps one draft per user and model. Two devices or tabs editing one draft need a rule. Photo storage costs grow with drafts (Plan Open 8: 1 GB per user at first, not enforced in the browser).",
+              "future": "A size limit per user. A reminder before deletion.",
+              "light": "Save to the server only, with a visible saved-at time.",
+              "decisions": [
+                { "choice": "The most recent save wins.", "alt": "Merge edits.", "why": "Simple, and one user rarely edits one draft from two places." }
+              ],
+              "links": ["P-4.2", "P-5.6"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "letter": "D",
+      "title": "The website",
+      "sections": [
+        {
+          "id": "B-18",
+          "title": "Public pages",
+          "cards": [
+            {
+              "title": "Homepage and gallery",
+              "status": "partial",
+              "how": "A marketing homepage with header and footer, and a /models gallery of models showing tier, price in points, and the page list, with a Preview in editor (or Open, if owned) button. The admin's price, tier and visibility changes show up here.",
+              "tech": "Server components list public/models/*.json (lib/models.js). A client layer applies the admin's changes from lib/mockStore.js. The older /templates gallery still exists but is not linked.",
+              "limits": "Models come from files, and the admin's changes live in one browser. The sample prices are placeholders: the Plan wants real prices in points set by the client (Open 4). The marketing header does not show that you are signed in. There is no translation or right-to-left layout.",
+              "future": "Models from the database with tier and price in points, previews with the watermark, three languages.",
+              "decisions": [
+                { "choice": "The price constant lives in a file with no browser-only code.", "alt": "Keep it with the payment helper.", "why": "The browser-only marker on that file would have leaked into server pages." }
+              ],
+              "links": ["P-5.2", "P-5.11"]
+            }
+          ]
+        },
+        {
+          "id": "B-19",
+          "title": "Accounts",
+          "cards": [
+            {
+              "title": "Sign-in and dashboard",
+              "status": "partial",
+              "how": "Login and sign-up pages, a dashboard (points balance, models you own, recent activity, available models) and a wallet (balance, top-up bundles and how to top up, full history). Sign-in saves a name and email in the browser, so this is not real authentication. Demo only: an email starting with admin signs in as an admin.",
+              "tech": "lib/mockAuth.js and lib/mockStore.js with localStorage. useSession reads the user after the page loads so the server and first render match, and refreshes when stored data changes.",
+              "limits": "No passwords or sessions, and the roles come from the email, so the admin gate (AdminOnly.jsx) protects nothing. Drafts are not shown because they are not saved yet (T-022).",
+              "future": "Our own accounts: email and password plus Google, confirmation and reset links by email, roles (buyer, admin, designer) and protected admin routes.",
+              "decisions": [],
+              "links": ["P-5.1", "P-5.15"]
+            }
+          ]
+        },
+        {
+          "id": "B-20",
+          "title": "Admin panel",
+          "cards": [
+            {
+              "title": "Template management",
+              "status": "partial",
+              "how": "Four tabs for admins. Templates lists templates with conversion date, canvas size, zone counts, asset count, size and links. Models sets each model's tier, price in points and visibility. Points tops up or adjusts a buyer's points (reason required, no negative balance, nothing editable afterwards) and shows balances and the latest changes. Conversion queue lists jobs, shows the expected finish for a new upload (3 queued jobs plus the new file shows 1 h 15 min), and lets you add or finish jobs.",
+              "tech": "Server pages for the file lists and client pages on lib/mockStore.js for the rest. AdminTabs and AdminOnly components.",
+              "limits": "All of it is a demo on browser storage: nothing really uploads or converts, there is no review or approval of templates, no user manager, and the admin gate protects nothing. A model can go live without checking that its templates are published.",
+              "future": "PSD upload with queue status and expected time, review and approval, model manager (pages, tier, price), user manager, and the points and top-up manager (B-21).",
+              "light": "Approve or reject a template, and top up a user's points with a note.",
+              "decisions": [],
+              "links": ["P-5.12", "P-5.13", "P-5.14", "P-5.15", "P-5.16"]
+            }
+          ]
+        },
+        {
+          "id": "B-21",
+          "title": "Points and purchases",
+          "cards": [
+            {
+              "title": "Points ledger and top-ups",
+              "status": "partial",
+              "how": "Buyers hold a points balance. They choose a top-up bundle (a price in DA for an amount of points, larger bundles giving more points per DA) and pay Said off the platform. Said adds the points in the admin panel with a note, and the buyer gets an email receipt. After the review step, Buy spends the model's price in points. With enough points the watermark comes off and the export unlocks at once. With too few, the buyer sees the bundles. Points do not expire. For a refund, Said adjusts the balance by hand and returns the money himself.",
+              "tech": "A ledger table that only the server writes, bundle and purchase tables, a transactional email service. A spend checks the balance and writes its ledger row in one database transaction. Drafted as SQL in web/db/schema.sql (an append-only ledger, credit_points for admins, spend_points that locks the user's row so two spends cannot overlap). Tested in PGlite (H-2026-10-19-24); not yet run on a real server, and two simultaneous spends are still untested.",
+              "limits": "The screens exist on placeholder data: the buyer's wallet, the buy dialog and the admin Points page (H-2026-10-19-13), but the real ledger does not (T-026). Top-ups wait on Said. There is no invoice or payment record on the platform, only the ledger. Whether a prepaid balance has tax or accounting consequences is not known (Open 11). How designer commissions are computed from points sold at different rates is not decided (Open 12).",
+              "future": "Card payment through Algérie Poste (Dahabia and CIB) adds points automatically using the same ledger. A subscription service may sit next to points (Open 13).",
+              "light": "One bundle, an admin form that adds points, and a spend check on Buy.",
+              "decisions": [
+                { "choice": "Prepaid points with off-platform top-ups.", "alt": "A manual sale for every purchase.", "why": "Said handles one transaction per top-up instead of one per template, and buyers spend instantly. Card payment later only needs to feed the same balance." },
+                { "choice": "Points never expire and are never refunded automatically.", "alt": "Expiry, or automatic refunds.", "why": "Khairou's decision. Said adjusts a balance by hand when a refund is needed." }
+              ],
+              "links": ["P-4.1", "P-4.3", "P-5.8", "P-5.16", "P-5.20", "P-5.25", "P-5.26", "P-5.27"]
+            }
+          ]
+        },
+        {
+          "id": "B-22",
+          "title": "Languages and currency",
+          "cards": [
+            {
+              "title": "French, Arabic and English",
+              "status": "built",
+              "how": "Every screen is in French (the default), Arabic and English. A switcher in the header, the app bar and the editor sets a cookie, and the server renders the page in that language. Arabic sets the page to right to left and mirrors the whole layout: the layers panel moves to the left, the page arrows swap sides and the navigation order reverses. Top-up bundles show in DA with .00 (12000.00 DA) and model prices show in points, with Western digits in all three languages. Arabic text on the page uses the bundled Cairo font.",
+              "tech": "app/i18n: one message file per language with the same keys (a test checks it), a t() function with plural forms (Arabic has six), number, price and date formatters, a provider for client code and getI18n() for server code. The styles use logical properties (start and end) instead of left and right. The canvas itself is never mirrored.",
+              "limits": "Model and page names, the converter's layer names and admin-typed reasons are content and are not translated. The Arabic text was written by me and needs a native speaker's review before launch. The home page still carries the earlier generic product copy. The language is a cookie, so every page renders per request and there are no separate addresses per language.",
+              "future": "Native review of the Arabic and French. Translated model names if Said wants them. A language per address (/fr, /ar, /en) if search engines or sharing links matter.",
+              "decisions": [
+                { "choice": "The language is a cookie, with no language in the address.", "alt": "Routes under /fr, /ar and /en, as the Next.js guide shows.", "why": "It keeps every link as it is and needs no restructuring of the pages. The cost is no separate address per language, which matters only for search engines." }
+              ],
+              "links": ["P-5.11"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "letter": "E",
+      "title": "Scale and roadmap",
+      "sections": [
+        {
+          "id": "B-23",
+          "title": "Phases",
+          "phases": [
+            { "name": "Launch (about 4 months)", "items": ["Our own backend on one server: accounts, database, storage", "Models and pages in the database, with tier and price", "Editor on preview assets, with drafts and autosave", "Server export as a zip, through a queue", "Admin: upload through the conversion queue, review, models, users, points and top-ups", "Points balance, ledger and top-up bundles, with email receipts", "Three languages, right to left for Arabic, DA prices", "Watermark and unlock driven by the server"] },
+            { "name": "After launch", "items": ["Designer applications, accounts and management screen", "Conversion queue opened to designers, price proposals", "Card payment through Algérie Poste, adding points automatically", "Automatic commissions", "More admins or a bot", "Subscription service, if Said wants one"] },
+            { "name": "Later", "items": ["AI agent and AI tools for modeling, including plan image to rough 3D model", "AI reviewer for designs", "Other countries and other fields, such as commerce ads and event banners"] }
+          ]
+        },
+        {
+          "id": "B-24",
+          "title": "Risk register",
+          "risks": [
+            { "title": "Unpaid users get the clean image", "severity": "high", "consequence": "Sales are lost.", "mitigation": "Server-side export, full-resolution files only on the server (B-09, B-16)." },
+            { "title": "Export memory and time", "severity": "high", "consequence": "Exports fail or exceed the 1 minute target.", "mitigation": "Strip rendering, a cap on running jobs, kept zips, progress shown." },
+            { "title": "Editor speed misses the target", "severity": "high", "consequence": "Buyers lose the speed that is the product's main promise, and hosting cannot be sized.", "mitigation": "Preview assets, layer caching, and a numeric target set with Said (Open 3)." },
+            { "title": "One developer, a first custom backend, a 4 month deadline", "severity": "high", "consequence": "Launch slips.", "mitigation": "A narrow launch scope that keeps designers and card payment out, one server to run, a tested database schema, and placeholder screens already built on the same rules." },
+            { "title": "Misnamed layers break conversion", "severity": "medium", "consequence": "Templates with missing zones go live unnoticed.", "mitigation": "Validator with clear messages, and Said's review before going live (B-04, B-08)." },
+            { "title": "Editor and server drawing disagree", "severity": "medium", "consequence": "The exported page does not match the preview.", "mitigation": "Shared fonts and drawing rules, a test that renders one sample both ways." },
+            { "title": "Power or internet cuts", "severity": "medium", "consequence": "Lost work and lost trust.", "mitigation": "Local-first autosave (B-17)." },
+            { "title": "A balance goes wrong", "severity": "high", "consequence": "A buyer loses points or gets free exports, and trust breaks.", "mitigation": "An append-only ledger, each spend checked and applied in one database step, only admins can credit, every change logged with who and why (B-21)." },
+            { "title": "Prepaid points carry legal or accounting obligations", "severity": "medium", "consequence": "Tax or consumer rules could apply to a prepaid balance.", "mitigation": "Ask Said's accountant before launch (Open 11) and keep the ledger auditable." },
+            { "title": "Top-ups wait on Said", "severity": "low", "consequence": "A buyer cannot spend until Said credits the payment.", "mitigation": "Email receipt on credit, and a list of recent top-ups in the admin panel." },
+            { "title": "Storage cost of PSDs, assets, drafts and zips", "severity": "medium", "consequence": "Monthly cost grows with use.", "mitigation": "One-month draft expiry, expiring zips, PSD retention rules (Open 8)." },
+            { "title": "Vendor lock-in", "severity": "low", "consequence": "Switching backends is expensive.", "mitigation": "Keep storage paths and the job format plain, so workers and files move without change." }
+          ]
+        }
+      ]
+    }
+  ]
+}

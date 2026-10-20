@@ -1,0 +1,6 @@
+# A generated page from an earlier build. Generated pages are written to a
+# scratch folder now, and rebuilt from the sources.
+/backend-model.html
+
+# Temporary exports of the pages' databases
+/_export*/

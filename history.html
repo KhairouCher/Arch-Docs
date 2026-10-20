@@ -1,0 +1,191 @@
+<title>ArchPresent History</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f3f4f2; --surface: #ffffff; --fg: #15181b; --muted: #5b646b; --line: #d6dadc;
+  --accent: #24559e; --ok: #2e7d4f; --warn: #a9680f; --risk: #b3342b;
+  --warn-bg: #f7ecd9; --accent-bg: #e4ecf7; --ok-bg: #e0efe6; --risk-bg: #f6e2df; --later-bg: #ebedee;
+  --head: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --ok-bg: #163023; --risk-bg: #321a18; --later-bg: #22272b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --ok-bg: #163023; --risk-bg: #321a18; --later-bg: #22272b; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+* { box-sizing: border-box; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 0 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 10px 0; font-family: var(--mono); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.bar b { color: var(--fg); font-weight: 600; }
+.bar a { color: var(--accent); }
+.mast { padding: 32px 0 22px; border-bottom: 2px solid var(--fg); }
+.mast h1 { font-family: var(--head); font-weight: 700; font-size: clamp(44px, 9vw, 84px); line-height: .95; letter-spacing: .01em; text-transform: uppercase; margin: 0 0 6px; }
+.mast .doc { font-family: var(--head); font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+.mast p.sum { max-width: 68ch; margin: 0 0 16px; color: var(--muted); }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.stats li { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: var(--surface); padding: 4px 10px; border-radius: 3px; }
+.stats b { font-weight: 600; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 14px 0; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); border-bottom: 1px solid var(--line); z-index: 2; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.filters select, .filters input { font-family: var(--body); font-size: 14px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--fg); min-width: 0; }
+.filters input { flex: 1 1 180px; }
+.month { font-family: var(--head); font-weight: 600; font-size: 26px; text-transform: uppercase; letter-spacing: .05em; margin: 26px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.month small { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0; margin-left: 10px; }
+.entry { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; scroll-margin-top: 90px; min-width: 0; }
+.entry:target { outline: 2px solid var(--accent); }
+.entry header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 6px; }
+.entry h3 { margin: 0; font-size: 17px; font-weight: 600; flex: 1 1 260px; min-width: 0; }
+.id { font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+a.id:hover { text-decoration: underline; }
+.date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; }
+.pill.added { background: var(--ok-bg); color: var(--ok); }
+.pill.changed, .pill.decided { background: var(--accent-bg); color: var(--accent); }
+.pill.fixed { background: var(--warn-bg); color: var(--warn); }
+.pill.removed { background: var(--risk-bg); color: var(--risk); }
+.pill.docs { background: var(--later-bg); color: var(--muted); }
+dl.f { margin: 8px 0 0; display: grid; gap: 6px; }
+dl.f > div { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 2px 14px; }
+dl.f dt { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+dl.f dd { margin: 0; font-size: 15px; min-width: 0; overflow-wrap: anywhere; max-width: 72ch; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.empty, .note { color: var(--muted); padding: 24px 0; max-width: 62ch; }
+@media (max-width: 600px) { dl.f > div { grid-template-columns: minmax(0, 1fr); } }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<div class="wrap">
+  <div class="bar"><b>History</b><a href="https://claude.ai/artifact/8rwr77T3tnP9CbyG6n4ffi" target="_blank" rel="noopener">Plan</a><a href="https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH" target="_blank" rel="noopener">Blueprint</a><a href="https://claude.ai/artifact/JkPiusgky9b5qAf11fUDhQ" target="_blank" rel="noopener">Build Log</a><a href="https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub" target="_blank" rel="noopener">Style Ledger</a></div>
+  <div class="mast">
+    <h1>ArchPresent</h1>
+    <p class="doc">History</p>
+    <p class="sum">Every addition, change and removal since the project began, across the code and the documents. Entries are never edited after the day they are written. A wrong entry gets a new one that corrects it. Entries marked "reconstructed" were rebuilt from the git log and the working sessions when this record was started.</p>
+    <ul class="stats" id="stats"></ul>
+  </div>
+  <div class="filters" id="filters">
+    <div class="chips" id="typeChips" role="group" aria-label="Filter by type"></div>
+    <select id="areaSel" aria-label="Filter by area"><option value="all">All areas</option></select>
+    <select id="bpSel" aria-label="Filter by Blueprint section"><option value="all">All Blueprint sections</option></select>
+    <input id="q" type="search" placeholder="Search entries" aria-label="Search entries">
+  </div>
+  <div id="list"><p class="note">Loading entries.</p></div>
+</div>
+<script>
+(function () {
+  var PLAN = "https://claude.ai/artifact/8rwr77T3tnP9CbyG6n4ffi";
+  var BP = "https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH";
+  var TYPES = ["all", "added", "changed", "removed", "fixed", "decided", "docs"];
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var entries = [];
+  var state = { type: "all", area: "all", bp: "all", q: "" };
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function arr(v) { return Array.isArray(v) ? v : (v ? [v] : []); }
+  function suffix(id) { var m = /-(\d+)$/.exec(id || ""); return m ? parseInt(m[1], 10) : 0; }
+  function sorted(list) {
+    return list.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return suffix(b.id) - suffix(a.id);
+    });
+  }
+  function ref(x) {
+    if (/^P-/.test(x)) return '<a class="id" href="' + PLAN + '" target="_blank" rel="noopener">' + esc(x) + '</a>';
+    if (/^B-/.test(x)) return '<a class="id" href="' + BP + '#' + esc(x) + '" target="_blank" rel="noopener">' + esc(x) + '</a>';
+    return '<span class="id">' + esc(x) + '</span>';
+  }
+  function field(label, html) { return html ? '<div><dt>' + label + '</dt><dd>' + html + '</dd></div>' : ""; }
+  function entryHtml(e) {
+    var refs = arr(e.blueprint).concat(arr(e.plan), arr(e.task));
+    return '<article class="entry" id="' + esc(e.id) + '"><header>' +
+      '<a class="id" href="#' + esc(e.id) + '">' + esc(e.id) + '</a>' +
+      '<span class="pill ' + esc(e.type) + '">' + esc(e.type) + '</span>' +
+      '<span class="date">' + esc(e.date) + (e.dateNote ? ' (' + esc(e.dateNote) + ')' : '') + '</span>' +
+      '<h3>' + esc(e.title) + '</h3></header><dl class="f">' +
+      field("What", esc(e.what)) + field("Why", esc(e.why)) + field("Removed", esc(e.removed)) +
+      field("Links", refs.length ? '<span class="tags">' + refs.map(ref).join("") + '</span>' : "") +
+      field("Files", arr(e.files).length ? '<span class="mono">' + arr(e.files).map(esc).join("<br>") + '</span>' : "") +
+      field("Commit", e.commit ? '<span class="mono">' + esc(e.commit) + '</span>' : "") +
+      field("By", esc(e.by)) + '</dl></article>';
+  }
+  function matches(e) {
+    if (state.type !== "all" && e.type !== state.type) return false;
+    if (state.area !== "all" && e.area !== state.area) return false;
+    if (state.bp !== "all" && arr(e.blueprint).indexOf(state.bp) < 0) return false;
+    if (state.q) {
+      var hay = [e.id, e.title, e.what, e.why, e.removed, arr(e.files).join(" ")].join(" ").toLowerCase();
+      if (hay.indexOf(state.q.toLowerCase()) < 0) return false;
+    }
+    return true;
+  }
+  function fillSelects() {
+    var areas = {}, bps = {};
+    entries.forEach(function (e) { if (e.area) areas[e.area] = 1; arr(e.blueprint).forEach(function (b) { bps[b] = 1; }); });
+    function opts(sel, all, keys, cur) {
+      sel.innerHTML = '<option value="all">' + all + '</option>' + keys.sort().map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + '</option>'; }).join("");
+      sel.value = keys.indexOf(cur) >= 0 ? cur : "all";
+    }
+    opts($("areaSel"), "All areas", Object.keys(areas), state.area);
+    opts($("bpSel"), "All Blueprint sections", Object.keys(bps), state.bp);
+    state.area = $("areaSel").value; state.bp = $("bpSel").value;
+  }
+  function renderStats() {
+    var now = new Date(), key = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    var month = entries.filter(function (e) { return (e.date || "").slice(0, 7) === key; }).length;
+    var counts = {};
+    entries.forEach(function (e) { counts[e.type] = (counts[e.type] || 0) + 1; });
+    $("stats").innerHTML = '<li><b>' + entries.length + '</b> entries</li><li><b>' + month + '</b> this month</li>' +
+      TYPES.slice(1).filter(function (t) { return counts[t]; }).map(function (t) { return '<li><b>' + counts[t] + '</b> ' + t + '</li>'; }).join("");
+  }
+  function renderChips() {
+    $("typeChips").innerHTML = TYPES.map(function (t) { return '<button type="button" class="chip" data-t="' + t + '" aria-pressed="' + (state.type === t) + '">' + t + '</button>'; }).join("");
+  }
+  function render() {
+    var list = $("list");
+    if (!entries.length) { list.innerHTML = '<p class="empty">No entries yet. Each change to the code or the documents is logged here with what changed and why.</p>'; return; }
+    var shown = sorted(entries.filter(matches));
+    if (!shown.length) { list.innerHTML = '<p class="empty">No entries match these filters.</p>'; return; }
+    var html = "", last = "", count = {};
+    shown.forEach(function (e) { var k = (e.date || "").slice(0, 7); count[k] = (count[k] || 0) + 1; });
+    shown.forEach(function (e) {
+      var k = (e.date || "").slice(0, 7);
+      if (k !== last) { last = k; var p = k.split("-"); html += '<h2 class="month">' + (MONTHS[parseInt(p[1], 10) - 1] || "") + ' ' + esc(p[0]) + '<small>' + count[k] + ' entries</small></h2>'; }
+      html += entryHtml(e);
+    });
+    list.innerHTML = html;
+    if (location.hash.length > 1) { var t = document.getElementById(location.hash.slice(1)); if (t) t.scrollIntoView(); }
+  }
+  $("typeChips").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-t]"); if (!b) return;
+    state.type = b.getAttribute("data-t"); renderChips(); render();
+  });
+  $("areaSel").addEventListener("change", function () { state.area = this.value; render(); });
+  $("bpSel").addEventListener("change", function () { state.bp = this.value; render(); });
+  $("q").addEventListener("input", function () { state.q = this.value.trim(); render(); });
+  renderChips();
+
+  var started = false;
+  function start(db) {
+    if (started) return; started = true;
+    db.collection("entries").orderBy("date", "desc").limit(1000).onSnapshot(function (snap) {
+      entries = snap.docs.map(function (d) { var o = d.data() || {}; o.id = o.id || d.id; return o; });
+      fillSelects(); renderStats(); render();
+    }, function () { $("list").innerHTML = '<p class="note">Entries could not be loaded. Reload the page, or open it while signed in to claude.ai.</p>'; });
+  }
+  if (window.claude && window.claude.use) {
+    window.claude.use("db").then(function (db) {
+      if (db) start(db); else $("list").innerHTML = '<p class="note">Entries load when this page is opened signed in to claude.ai.</p>';
+    }, function () { $("list").innerHTML = '<p class="note">Entries could not be loaded.</p>'; });
+  } else {
+    $("list").innerHTML = '<p class="note">Entries load when this page is opened in the claude.ai viewer.</p>';
+  }
+})();
+</script>

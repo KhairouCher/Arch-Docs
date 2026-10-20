@@ -1,0 +1,652 @@
+<title>ArchPresent Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #f3f4f2; --surface: #ffffff; --fg: #15181b; --muted: #5b646b; --line: #d6dadc;
+  --accent: #24559e; --ok: #2e7d4f; --warn: #a9680f; --risk: #b3342b;
+  --warn-bg: #f7ecd9; --accent-bg: #e4ecf7; --must-bg: #e0efe6; --later-bg: #ebedee;
+  --head: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --must-bg: #163023; --later-bg: #22272b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --must-bg: #163023; --later-bg: #22272b; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+* { box-sizing: border-box; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 0 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 10px 0; font-family: var(--mono); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.bar b { color: var(--fg); font-weight: 600; }
+.bar a { color: var(--accent); }
+.mast { padding: 36px 0 28px; border-bottom: 2px solid var(--fg); }
+.mast h1 { font-family: var(--head); font-weight: 700; font-size: clamp(44px, 9vw, 84px); line-height: .95; letter-spacing: .01em; text-transform: uppercase; margin: 0 0 6px; text-wrap: balance; }
+.mast .doc { font-family: var(--head); font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 22px; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 28px; margin: 0; }
+.meta div { min-width: 0; }
+.meta dt { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.meta dd { margin: 2px 0 0; font-size: 15px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; }
+.pill.draft { background: var(--warn-bg); color: var(--warn); }
+.pill.must { background: var(--must-bg); color: var(--ok); }
+.pill.later { background: var(--later-bg); color: var(--muted); }
+.layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; padding-top: 28px; }
+.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-top: 4px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: s; }
+.toc a { display: block; padding: 5px 0; color: var(--muted); text-decoration: none; font-size: 14px; border-bottom: 1px solid var(--line); }
+.toc a:hover, .toc a:focus-visible { color: var(--accent); }
+main { min-width: 0; }
+section { padding: 6px 0 34px; scroll-margin-top: 16px; }
+h2 { font-family: var(--head); font-weight: 600; font-size: 30px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+h2 .n { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-right: 10px; letter-spacing: 0; }
+h3 { font-family: var(--head); font-weight: 600; font-size: 20px; letter-spacing: .04em; text-transform: uppercase; margin: 22px 0 8px; }
+p { margin: 0 0 10px; max-width: 70ch; }
+.id { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.lead { font-size: 18px; max-width: 66ch; }
+ul.plain { margin: 0; padding-left: 20px; max-width: 72ch; }
+ul.plain li { margin-bottom: 6px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; min-width: 0; }
+.card h3 { margin-top: 0; }
+.card dl { margin: 0; display: grid; gap: 8px; }
+.card dt { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.card dd { margin: 1px 0 0; font-size: 14px; }
+.wf { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+.wf header { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 8px; }
+.wf h3 { margin: 0; }
+.wf ol { margin: 0; padding-left: 22px; max-width: 72ch; }
+.wf li { margin-bottom: 4px; }
+.row { display: grid; grid-template-columns: 78px minmax(0, 1fr) 150px; gap: 6px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.row .text { min-width: 0; }
+.row .acc { display: block; margin-top: 4px; font-size: 14px; color: var(--muted); }
+.row .side { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: none; }
+.open { background: var(--warn-bg); border-left: 3px solid var(--warn); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.open .q { margin: 4px 0 4px; }
+.open .who { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.scope { display: grid; gap: 10px; }
+.scope div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
+.scope b { display: block; }
+.scope span { color: var(--muted); font-size: 14px; }
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .toc { position: static; }
+  .toc ol { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); column-gap: 18px; }
+  .row { grid-template-columns: minmax(0, 1fr); }
+}
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<style>
+/* Language and theme switch. Arabic swaps to IBM Plex Sans Arabic and mirrors the layout. */
+.switches { display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:flex-end; align-items:center; padding:10px 0 0; }
+.seg { display:inline-flex; border:1px solid var(--line); border-radius:5px; overflow:hidden; background:var(--surface); }
+.seg button { font-family:var(--mono); font-size:12px; letter-spacing:.04em; border:0; background:transparent; color:var(--muted); padding:6px 12px; cursor:pointer; }
+.seg button + button { border-inline-start:1px solid var(--line); }
+.seg button[aria-pressed="true"] { background:var(--accent); color:var(--surface); }
+.seg button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+.seg button[data-lang="ar"] { font-family:"IBM Plex Sans Arabic", var(--body); font-size:13px; letter-spacing:0; }
+.wrap[hidden] { display:none !important; }
+.wrap[lang="ar"] { --head:"IBM Plex Sans Arabic", "Barlow Condensed", sans-serif; --body:"IBM Plex Sans Arabic", "Barlow", system-ui, sans-serif; }
+.wrap[lang="ar"] .mast h1 { font-family:"Barlow Condensed", "Arial Narrow", sans-serif; }
+.wrap[lang="ar"] h2, .wrap[lang="ar"] h3, .wrap[lang="ar"] .mast .doc { letter-spacing:0; text-transform:none; }
+.wrap[lang="ar"] .meta dt, .wrap[lang="ar"] .card dt, .wrap[lang="ar"] th, .wrap[lang="ar"] .pill { font-family:var(--body); letter-spacing:0; text-transform:none; font-size:12.5px; }
+ul.plain { padding-left:0; padding-inline-start:20px; }
+.wf ol { padding-left:0; padding-inline-start:22px; }
+th, td { text-align:start; }
+.open { border-left:0; border-inline-start:3px solid var(--warn); }
+.open.answered { background:var(--must-bg); border-inline-start-color:var(--ok); }
+.open.answered .ans { margin:4px 0 4px; max-width:70ch; font-weight:500; }
+.id, .d { unicode-bidi:isolate; }
+.wrap[lang="ar"] .id, .wrap[lang="ar"] .d { direction:ltr; }
+.switches-wrap { padding-block:0 !important; }
+h2 .n { margin-right:0; margin-inline-end:10px; }
+.wrap[lang="ar"] .bar { font-family:var(--body); font-size:13px; }
+.seg button:lang(ar) { font-family:"IBM Plex Sans Arabic", var(--body); font-size:13px; letter-spacing:0; }
+</style>
+<div class="wrap switches-wrap"><div class="switches">
+  <div class="seg" role="group" aria-label="Language / Langue / اللغة"><button type="button" data-lang="en" lang="en">English</button><button type="button" data-lang="fr" lang="fr">Français</button><button type="button" data-lang="ar" lang="ar">العربية</button></div>
+  <div class="seg" role="group" id="themeSeg" aria-label="Theme"><button type="button" data-theme-set="light"></button><button type="button" data-theme-set="dark"></button><button type="button" data-theme-set="auto"></button></div>
+</div></div>
+<div class="wrap" data-lang="en" lang="en" dir="ltr">
+  <div class="bar"><b>Plan</b><a href="https://claude.ai/artifact/JkPiusgky9b5qAf11fUDhQ" target="_blank" rel="noopener">Build Log</a><a href="https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH" target="_blank" rel="noopener">Blueprint</a><a href="https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P" target="_blank" rel="noopener">History</a><a href="https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub" target="_blank" rel="noopener">Style Ledger</a></div>
+  <div class="mast">
+    <h1>ArchPresent</h1>
+    <p class="doc">Plan</p>
+    <dl class="meta">
+      <div><dt>Client</dt><dd>Said, architect (own firm)</dd></div>
+      <div><dt>Spec</dt><dd>No written spec. Built from discussion, 2026-10-15 and 2026-10-16</dd></div>
+      <div><dt>Target</dt><dd>Platform live about 4 months from 2026-10-16 (around mid-February 2027)</dd></div>
+      <div><dt>Status</dt><dd><span class="pill must">agreed</span></dd></div>
+    </dl>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Sections"><ol><li><a href="#summary">01 Summary</a></li><li><a href="#context">02 Client and context</a></li><li><a href="#users">03 Users</a></li><li><a href="#workflows">04 Workflows</a></li><li><a href="#requirements">05 Requirements</a></li><li><a href="#results">06 Desired results</a></li><li><a href="#variables">07 Variables</a></li><li><a href="#constraints">08 Constraints</a></li><li><a href="#upgradability">09 Upgradability</a></li><li><a href="#scope">10 Out of scope</a></li><li><a href="#open">11 Open items</a></li></ol></nav>
+    <main>
+<section><h2 id="summary"><span class="n">01</span>Summary</h2><p class="lead">ArchPresent is a desktop web platform where architects, students and bureaus build print-ready architectural presentations in about 15 minutes, instead of a week in Photoshop. A presentation is called a model and has several pages. Each page is a Photoshop template converted to a web-editable template. The one thing it must do well is speed, without losing the quality needed to print at A0.</p></section>
+
+<section><h2 id="context"><span class="n">02</span>Client and context</h2><ul class="plain"><li>Said is an architect with his own firm and works the traditional way. He wanted a tool to speed up his own work, then decided to sell it to the public: other architects, students and bureaus.</li><li>Said made the first templates himself. Later, outside designers will make them and earn a commission on every copy sold.</li><li>A working prototype exists and was shown to Said, who approved finishing it. The PSD converter and the editor work locally. Sign-in and payment are placeholders, nothing is hosted, and nothing is saved yet.</li><li>The platform runs under the firm's name. There are no known legal rules on data location, and data can be hosted anywhere.</li></ul></section>
+
+<section><h2 id="users"><span class="n">03</span>Users</h2><div class="cards">
+  <div class="card"><h3>Buyer</h3><dl>
+    <div><dt>Who</dt><dd>Students, architects and bureaus. All three use the same workflow. Only quality and price differ (see tiers under Variables).</dd></div>
+    <div><dt>Does</dt><dd>Picks a model, fills in photos and text, reviews, buys, exports and prints.</dd></div>
+    <div><dt>Device</dt><dd>Desktop only. Phones and tablets are not supported.</dd></div>
+    <div><dt>Fears</dt><dd>Print quality that looks fine on screen but shows as blocks at A0. Losing work to a power or internet cut. Slow exports.</dd></div>
+  </dl></div>
+  <div class="card"><h3>Admin</h3><dl>
+    <div><dt>Who</dt><dd>Said and Khairou at first. More admins or a bot later.</dd></div>
+    <div><dt>Does</dt><dd>Uploads PSDs, which the platform converts in a queue. Reviews and publishes designs, manages models, prices and users, and tops up user balances. Khairou can also convert on his own PC and upload the output, which skips the queue.</dd></div>
+    <div><dt>Device</dt><dd>Desktop.</dd></div>
+    <div><dt>Fears</dt><dd>A bad template going live. A wrong balance.</dd></div>
+  </dl></div>
+  <div class="card"><h3>Designer</h3><dl>
+    <div><dt>Who</dt><dd>Outside designers who make templates and earn a commission. Not part of the first 4 months.</dd></div>
+    <div><dt>Does</dt><dd>Later: applies with past designs, uploads PSDs, sets a proposed price, follows a conversion queue with an expected time.</dd></div>
+    <div><dt>Device</dt><dd>Desktop.</dd></div>
+    <div><dt>Fears</dt><dd>A design rejected because of layer names or resolution rules.</dd></div>
+  </dl></div></div></section>
+
+<section><h2 id="workflows"><span class="n">04</span>Workflows</h2>
+  <div class="wf"><header><span class="id">P-4.1</span><h3>Buyer builds and buys a model</h3><span class="id" style="color:var(--muted)">discussion 2026-10-15</span></header>
+  <ol><li>Browse the available models.</li><li>Choose one and open it in the editor.</li><li>Fill in photos and text on each page, reorder layers, move and resize text.</li><li>Review the finished model.</li><li>Press Buy. The model's price in points is taken from the buyer's balance. If the balance is too small, the buyer is shown the top-up bundles.</li><li>The watermark disappears and export unlocks at once.</li><li>Export and download one zip with every page at full resolution.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.2</span><h3>Drafts are kept and survive cuts</h3><span class="id" style="color:var(--muted)">discussion 2026-10-15</span></header>
+  <ol><li>Work is saved automatically, so a power or internet cut loses nothing.</li><li>Each user has their own saved drafts and can return to them.</li><li>A draft is deleted for good after 1 month. The user is told this when a draft is saved.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.3</span><h3>Said tops up a balance</h3><span class="id" style="color:var(--muted)">discussion 2026-10-16</span></header>
+  <ol><li>The buyer chooses a top-up bundle and pays Said off the platform.</li><li>Said adds the bundle's points to the buyer's account in the admin panel, with a note.</li><li>The buyer gets an email receipt and sees the new balance.</li><li>For a refund, Said adjusts the balance by hand and returns the money himself.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.4</span><h3>An admin publishes a template</h3><span class="id" style="color:var(--muted)">discussion 2026-10-16</span></header>
+  <ol><li>The admin uploads a PSD.</li><li>The cloud converter queues it and shows the expected completion time.</li><li>When conversion finishes, the template appears as a model page.</li><li>Fast path, Khairou only: he runs the converter on his own PC and uploads the output manually. It appears as a model without waiting in the queue.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.5</span><h3>Outside designer path (later)</h3><span class="id" style="color:var(--muted)">discussion 2026-10-16</span></header>
+  <ol><li>Designer creates an account and submits designs.</li><li>Said reviews them and accepts or refuses the designer.</li><li>An accepted designer uploads designs and proposes a price.</li><li>The system converts each design in the cloud through a queue and shows the designer an expected completion time.</li><li>Said reviews the design and the price, then accepts or refuses.</li><li>An accepted design goes live.</li></ol></div></section>
+
+<section><h2 id="requirements"><span class="n">05</span>Requirements</h2>
+  <h3>Buyer</h3>
+  <div class="row"><span class="id">P-5.1</span>
+    <div class="text">Account sign-up and login.<span class="acc">Done when: A user can create an account, sign in and find their own drafts. Sign-in is by email and password or with Google. A buyer confirms their email address by link before buying.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.2</span>
+    <div class="text">Model gallery showing each model's tier and price in points, with watermarked previews.<span class="acc">Done when: Every model shows its tier and its price in points, and its preview carries the watermark.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.3</span>
+    <div class="text">Editor shows the model name with the page name in brackets, and moves between pages with arrows at the left and right of the canvas.<span class="acc">Done when: A 6 or 7 page model can be walked through, and edits on a page are still there when the user comes back.</span></div>
+    <div class="side"><span class="pill must">must</span><span>prototype (reconstructed)</span></div></div>
+  <div class="row"><span class="id">P-5.4</span>
+    <div class="text">Photo and text editing: upload photos into the template zones with fit or fill and pan, edit text, drag and resize text boxes, reorder layers.<span class="acc">Done when: A buyer fills a page without touching Photoshop.</span></div>
+    <div class="side"><span class="pill must">must</span><span>prototype (reconstructed)</span></div></div>
+  <div class="row"><span class="id">P-5.5</span>
+    <div class="text">Warn the buyer when an uploaded photo is too small to print well at A0.<span class="acc">Done when: A low-resolution photo shows a clear warning before export.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.6</span>
+    <div class="text">Automatic draft saving per user, deleted after 1 month with a notice at save time.<span class="acc">Done when: Cutting power or the connection mid-edit loses at most the last few seconds.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.7</span>
+    <div class="text">Review step before buying.<span class="acc">Done when: The buyer sees every page before the Buy button is available.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.8</span>
+    <div class="text">Buy spends the model's price in points from the buyer's balance and emails a receipt to the buyer.<span class="acc">Done when: With enough points the purchase completes at once and unlocks the export. With too few, the buyer sees the top-up bundles. The purchase is listed for Said.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.9</span>
+    <div class="text">Every design is watermarked until it is bought with points.<span class="acc">Done when: Unpaid editing and previews always show the watermark. The export never does.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.10</span>
+    <div class="text">Export one zip containing all pages at full resolution, available only after payment.<span class="acc">Done when: A paid model exports in at most 1 minute, pages up to about 10000 x 7000 px, files of 400 MB or more. A buyer can export a bought model as many times as they like while their account exists. Each zip is kept 7 days, then rendered again on request.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.11</span>
+    <div class="text">Interface in three languages. Arabic switches the layout to right-to-left. Top-up bundles are shown in DA with .00 and model prices in points.<span class="acc">Done when: Each language is complete, and Arabic mirrors the layout.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <h3>Admin</h3>
+  <div class="row"><span class="id">P-5.12</span>
+    <div class="text">Admins upload a PSD. The cloud converter processes it through a queue and shows the expected completion time.<span class="acc">Done when: With 20 designs queued at 15 minutes each, a new upload shows about 5 hours 15 minutes.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.13</span>
+    <div class="text">Said reviews a design before it goes live.<span class="acc">Done when: A design is not visible to buyers until Said accepts it. The one exception is output Khairou converts on his own PC (the fast path), which goes live without this review.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.14</span>
+    <div class="text">Manage models: name, pages, tier and price in points. Said sets every price.<span class="acc">Done when: Said can create a model from pages and set its tier and price.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.15</span>
+    <div class="text">Manage users, designers included.<span class="acc">Done when: An admin can see and manage every account.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.16</span>
+    <div class="text">Top up a user's points after an off-platform payment, adjust balances (refunds included), and see every transaction.<span class="acc">Done when: Every change to a balance appears in a history with who made it, when and why.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.24</span>
+    <div class="text">Fast path, Khairou only: convert on his own PC and upload the output manually. It appears as a model without waiting in the queue.<span class="acc">Done when: Uploaded converter output shows up as a model with no queue wait.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.25</span>
+    <div class="text">Every user has a points balance and a full transaction history. Points do not expire. Only admins add points.<span class="acc">Done when: The balance always equals the sum of the history, and two open tabs cannot spend the same points twice.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.26</span>
+    <div class="text">Top-up bundles set by Said, each with a price in DA and an amount of points. Bigger bundles give more points per DA. There are bundles for each use case, from one tier 1 template to 20 tier 3 models.<span class="acc">Done when: The buyer sees every bundle with its price in DA.</span></div>
+    <div class="side"><span class="pill must">must</span><span>discussion 2026-10-16</span></div></div>
+  <h3>Later</h3>
+  <div class="row"><span class="id">P-5.17</span>
+    <div class="text">Designer application with at least N past designs (N decided after Khairou talks to Said), designer accounts and a management screen.<span class="acc">Done when: A designer can apply, be accepted and see their designs and status.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.18</span>
+    <div class="text">Designers upload PSDs into the same conversion queue as admins, and see the expected completion time for their own upload.<span class="acc">Done when: A designer's expected time counts everything already in the queue, admin uploads included.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.19</span>
+    <div class="text">Designers propose a price for their design and Said accepts or refuses it.<span class="acc">Done when: Said sees the proposed price next to the design when reviewing.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.20</span>
+    <div class="text">Card payment through Algérie Poste (Dahabia and CIB cards).<span class="acc">Done when: A buyer pays by card on the platform and the points are added automatically.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.21</span>
+    <div class="text">Automatic commission handling. The rate is fixed and set only by Said.<span class="acc">Done when: Each sale records the designer's commission.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.22</span>
+    <div class="text">More than two admins, or a bot admin.<span class="acc">Done when: Admin roles can be added without code changes.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.23</span>
+    <div class="text">AI features: an agent, AI tools for modeling (including plan image to rough 3D model) and an AI agent that reviews designs.<span class="acc">Done when: To be defined when this phase starts.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.27</span>
+    <div class="text">A subscription service next to points. It needs a discussion with Said first.<span class="acc">Done when: To be defined after that discussion.</span></div>
+    <div class="side"><span class="pill later">later</span><span>discussion 2026-10-16</span></div></div></section>
+
+<section><h2 id="results"><span class="n">06</span>Desired results</h2><ul class="plain"><li>A presentation that used to take a week in Photoshop is built in about 15 minutes.</li><li>A full model exports in at most 1 minute.</li><li>Exports print at A0 with no visible pixelation. Pages are full resolution, up to about 10000 x 7000 px.</li><li>A power or internet cut never loses more than the last few seconds of work.</li><li>A PSD converts in at most 15 minutes per model. The prototype took about 3 minutes for a one-page template.</li><li>Editor responsiveness target: to be set (see Open items).</li></ul></section>
+
+<section><h2 id="variables"><span class="n">07</span>Variables</h2><div class="tablewrap"><table>
+  <thead><tr><th>Variable</th><th>Values seen so far</th><th>Default</th></tr></thead>
+  <tbody><tr><td>Interface language</td><td>French, Arabic (right-to-left), English</td><td>French</td></tr><tr><td>Currency</td><td>DA for top-up bundles, shown with .00 (for example 12000.00 DA). Models are priced in points.</td><td>DA</td></tr><tr><td>Tier</td><td>Student, architect, bureau. A student model might have 3 main pages. A bureau model adds 4 pages of professional detail.</td><td>Per model</td></tr><tr><td>Model price</td><td>Set per model by Said in points, depending on complexity, page count and quality</td><td>Set by Said</td></tr><tr><td>Top-up bundles</td><td>Bundles priced in DA that give points. Bigger bundles give more points per DA. There is a bundle for each use case, from one tier 1 template to 20 tier 3 models. Rates are decided later.</td><td>Set by Said</td></tr><tr><td>Commission rate</td><td>Fixed, set by Said only</td><td>To be set</td></tr><tr><td>Canvas size, DPI, complexity rules</td><td>Required of every design. Layer names matter most.</td><td>To be set</td></tr><tr><td>Draft retention</td><td>1 month</td><td>1 month</td></tr><tr><td>Draft photo storage per user</td><td>1 GB at first, to be revisited if storage grows</td><td>1 GB</td></tr><tr><td>Export zip retention</td><td>7 days, then removed and rendered again on request. Exports are unlimited while the account exists.</td><td>7 days</td></tr><tr><td>Pages per model</td><td>3 for a student example, 6 or 7 for the full models discussed</td><td>Per model</td></tr></tbody>
+</table></div></section>
+
+<section><h2 id="constraints"><span class="n">08</span>Constraints</h2><ul class="plain"><li>Desktop only.</li><li>Print quality at A0 is a hard requirement. Exports are full resolution.</li><li>The cloud converter needs a server that can run the Python conversion on PSDs of several hundred MB, from launch, because admin uploads go through it.</li><li>Layer names must follow the naming rule. The converter depends on it heavily, and a wrong name makes a file invalid.</li><li>About 4 months to launch.</li><li>No card payment at launch. Top-ups are paid to Said off the platform, and card payment needs legal permission first.</li><li>Points do not expire and are not refunded automatically. For a refund, Said adjusts the balance by hand and returns the money himself.</li><li>A balance must never be wrong: only admins add points, every change is recorded with who and why, and a spend is checked and applied in one step.</li><li>Power and internet cuts are common in Algeria, so saving must be automatic and robust.</li><li>Files are very large: pages around 10000 x 7000 px and files of 400 MB or more. Storage, bandwidth and browser limits must be planned for.</li><li>A buyer must never receive the clean full-resolution image before buying the model with points.</li><li>Hosting is not chosen yet. It depends on a performance target that Khairou and Said still have to set.</li><li>Drafts are permanently deleted after 1 month.</li></ul></section>
+
+<section><h2 id="upgradability"><span class="n">09</span>Upgradability</h2><ul class="plain"><li>More admins, or a bot.</li><li>Designers: applications, accounts, access to the conversion queue, price proposals and automatic commissions.</li><li>Card payment through Algérie Poste, adding points automatically.</li><li>A subscription service, to be discussed with Said.</li><li>Other countries: more languages, currencies and payment methods.</li><li>Other fields beyond architecture, such as commerce (ads) and events (banners). Templates and models should not be tied to architecture.</li><li>AI features, including plan image to rough 3D model.</li></ul></section>
+
+<section><h2 id="scope"><span class="n">10</span>Out of scope</h2><div class="scope"><div><b>Designer accounts, applications and designer price proposals</b><span>Left out of the first 4 months. If Said hires designers, he receives their files and uploads them himself as an admin, through the queue.</span></div><div><b>Card payment and automatic commissions</b><span>Needs legal permission first. Top-ups and commissions are handled by Said by hand.</span></div><div><b>Subscription service</b><span>Needs a discussion with Said first.</span></div><div><b>AI features</b><span>Future plan.</span></div><div><b>Multiple admins or a bot</b><span>Said and Khairou are enough at first.</span></div><div><b>Phones and tablets</b><span>The platform is desktop only on purpose.</span></div></div></section>
+
+<section><h2 id="open"><span class="n">11</span>Open items</h2>
+  <div class="open"><span class="id">Open 1</span><p class="q">How many past designs must a designer submit to apply (N)?</p><div class="who">Owner: Khairou, after talking to Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 2</span><p class="q">Exact rules for designers: canvas width and height, DPI and the complexity rules.</p><div class="who">Owner: Khairou and Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 3</span><p class="q">Performance target for the editor and the platform. It decides the hosting.</p><div class="who">Owner: Khairou and Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 4</span><p class="q">The price in points of each tier and model, the top-up bundles (price in DA and points) and the commission rate.</p><div class="who">Owner: Said · asked 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Open 5</span><p class="q">After one purchase, how many exports can the buyer make? The prototype charges per export. A model purchase may mean unlimited downloads of that model, or one.</p><p class="ans">Answered: unlimited. A buyer can export a bought model as many times as they like for as long as their account exists. A finished zip is kept 7 days, then removed, and rendered again on request.</p><div class="who">Answered by Khairou, 2026-10-19 · to be confirmed with Said · asked 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Open 6</span><p class="q">Does a template uploaded through the fast path (converted on Khairou's PC) still need Said's review before it goes live? Same question for templates converted through the queue.</p><p class="ans">Answered: a template converted on Khairou's PC and uploaded through the fast path goes live without Said's review. Templates converted through the queue still need it.</p><div class="who">Answered by Khairou, 2026-10-19 · to be confirmed with Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 7</span><p class="q">Where does the export render: in the browser or on a server? Pages of 10000 x 7000 px, 6 or 7 per zip, may exceed browser memory, and a server also keeps the clean image from unpaid users.</p><div class="who">Owner: Khairou (architecture decision) · asked 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Open 8</span><p class="q">Storage cost of drafts and their uploaded photos for 1 month. Is there a size limit per user?</p><p class="ans">Answered: 1 GB of draft photos per user at first. It is revisited if storage grows.</p><div class="who">Answered by Khairou, 2026-10-19 · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 9</span><p class="q">Which email service sends the receipts, and from which address? Service chosen: Resend (2026-10-19). The sender address is still open: it needs a domain name, which Said will provide.</p><div class="who">Owner: Khairou · asked 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Open 10</span><p class="q">Confirm the launch date. The 4 months are counted from 2026-10-16.</p><p class="ans">Answered: confirmed. The launch is around mid-February 2027.</p><div class="who">Answered by Khairou, 2026-10-21 · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 11</span><p class="q">Does a prepaid points balance have tax or accounting consequences in Algeria? Check with Said's accountant.</p><div class="who">Owner: Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 12</span><p class="q">How is a designer's commission calculated, given that points are sold at different rates? For example, on the DA value paid for the points spent.</p><div class="who">Owner: Khairou and Said · asked 2026-10-16</div></div>
+  <div class="open"><span class="id">Open 13</span><p class="q">Should there be a subscription service next to points, and how would it work? Later phase.</p><div class="who">Owner: Said · asked 2026-10-16</div></div></section>
+</main>
+  </div>
+</div>
+<div class="wrap" data-lang="fr" lang="fr" dir="ltr" hidden>
+  <div class="bar"><b>Plan</b><a href="https://claude.ai/artifact/JkPiusgky9b5qAf11fUDhQ" target="_blank" rel="noopener">Journal de construction</a><a href="https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH" target="_blank" rel="noopener">Blueprint</a><a href="https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P" target="_blank" rel="noopener">Historique</a><a href="https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub" target="_blank" rel="noopener">Guide de style</a></div>
+  <div class="mast">
+    <h1>ArchPresent</h1>
+    <p class="doc">Plan</p>
+    <dl class="meta">
+      <div><dt>Client</dt><dd>Said, architecte (cabinet propre)</dd></div>
+      <div><dt>Cahier des charges</dt><dd>Pas de document écrit. Établi à partir des échanges du 2026-10-15 et du 2026-10-16</dd></div>
+      <div><dt>Objectif</dt><dd>Plateforme en ligne environ 4 mois après le 2026-10-16 (vers la mi-février 2027)</dd></div>
+      <div><dt>Statut</dt><dd><span class="pill must">validé</span></dd></div>
+    </dl>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Sections"><ol><li><a href="#fr-summary">01 Résumé</a></li><li><a href="#fr-context">02 Client et contexte</a></li><li><a href="#fr-users">03 Utilisateurs</a></li><li><a href="#fr-workflows">04 Parcours</a></li><li><a href="#fr-requirements">05 Exigences</a></li><li><a href="#fr-results">06 Résultats attendus</a></li><li><a href="#fr-variables">07 Variables</a></li><li><a href="#fr-constraints">08 Contraintes</a></li><li><a href="#fr-upgradability">09 Évolutivité</a></li><li><a href="#fr-scope">10 Hors périmètre</a></li><li><a href="#fr-open">11 Points ouverts</a></li></ol></nav>
+    <main>
+<section><h2 id="fr-summary"><span class="n">01</span>Résumé</h2><p class="lead">ArchPresent est une plateforme web pour ordinateur où les architectes, les étudiants et les bureaux d’études créent en 15 minutes environ des présentations d’architecture prêtes à imprimer, au lieu d’une semaine sur Photoshop. Une présentation s’appelle un modèle et compte plusieurs pages. Chaque page est un gabarit Photoshop converti en gabarit modifiable sur le web. La chose qu’elle doit absolument bien faire, c’est la rapidité, sans perdre la qualité nécessaire pour imprimer en A0.</p></section>
+
+<section><h2 id="fr-context"><span class="n">02</span>Client et contexte</h2><ul class="plain"><li>Said est architecte, il a son propre cabinet et travaille de façon traditionnelle. Il voulait un outil pour accélérer son propre travail, puis a décidé de le vendre au public : autres architectes, étudiants et bureaux d’études.</li><li>Said a réalisé lui-même les premiers gabarits. Plus tard, des designers extérieurs en réaliseront et toucheront une commission sur chaque copie vendue.</li><li>Un prototype fonctionnel existe et a été présenté à Said, qui a validé sa finalisation. Le convertisseur PSD et l’éditeur fonctionnent en local. La connexion et le paiement sont factices, rien n’est hébergé et rien n’est encore enregistré.</li><li>La plateforme fonctionne sous le nom du cabinet. Aucune règle juridique connue n’impose le lieu de stockage des données ; elles peuvent être hébergées n’importe où.</li></ul></section>
+
+<section><h2 id="fr-users"><span class="n">03</span>Utilisateurs</h2><div class="cards">
+  <div class="card"><h3>Acheteur</h3><dl>
+    <div><dt>Qui</dt><dd>Étudiants, architectes et bureaux d’études. Tous les trois suivent le même parcours ; seuls la qualité et le prix changent (voir les niveaux dans Variables).</dd></div>
+    <div><dt>Fait</dt><dd>Choisit un modèle, ajoute photos et textes, vérifie, achète, exporte et imprime.</dd></div>
+    <div><dt>Appareil</dt><dd>Ordinateur uniquement. Les téléphones et tablettes ne sont pas pris en charge.</dd></div>
+    <div><dt>Craint</dt><dd>Une qualité d’impression correcte à l’écran mais pixelisée en A0. Perdre son travail lors d’une coupure de courant ou d’internet. Des exports lents.</dd></div>
+  </dl></div>
+  <div class="card"><h3>Administrateur</h3><dl>
+    <div><dt>Qui</dt><dd>Said et Khairou au départ. D’autres administrateurs ou un bot plus tard.</dd></div>
+    <div><dt>Fait</dt><dd>Dépose des PSD, que la plateforme convertit dans une file d’attente. Valide et publie les designs, gère les modèles, les prix et les utilisateurs, et recharge les soldes des utilisateurs. Khairou peut aussi convertir sur son propre PC et déposer le résultat, ce qui évite la file d’attente.</dd></div>
+    <div><dt>Appareil</dt><dd>Ordinateur.</dd></div>
+    <div><dt>Craint</dt><dd>Qu’un mauvais gabarit soit mis en ligne. Qu’un solde soit faux.</dd></div>
+  </dl></div>
+  <div class="card"><h3>Designer</h3><dl>
+    <div><dt>Qui</dt><dd>Designers extérieurs qui créent des gabarits et touchent une commission. Hors des 4 premiers mois.</dd></div>
+    <div><dt>Fait</dt><dd>Plus tard : postule avec des designs passés, dépose des PSD, propose un prix, suit une file de conversion avec un délai estimé.</dd></div>
+    <div><dt>Appareil</dt><dd>Ordinateur.</dd></div>
+    <div><dt>Craint</dt><dd>Qu’un design soit refusé à cause des noms de calques ou des règles de résolution.</dd></div>
+  </dl></div></div></section>
+
+<section><h2 id="fr-workflows"><span class="n">04</span>Parcours</h2>
+  <div class="wf"><header><span class="id">P-4.1</span><h3>L’acheteur crée et achète un modèle</h3><span class="id" style="color:var(--muted)">échange du 2026-10-15</span></header>
+  <ol><li>Parcourir les modèles disponibles.</li><li>En choisir un et l’ouvrir dans l’éditeur.</li><li>Ajouter photos et textes sur chaque page, réordonner les calques, déplacer et redimensionner les textes.</li><li>Vérifier le modèle terminé.</li><li>Appuyer sur Acheter. Le prix du modèle en points est déduit du solde de l’acheteur. Si le solde est insuffisant, les forfaits de recharge sont proposés.</li><li>Le filigrane disparaît et l’export se débloque immédiatement.</li><li>Exporter et télécharger un seul fichier zip contenant toutes les pages en pleine résolution.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.2</span><h3>Les brouillons sont conservés et résistent aux coupures</h3><span class="id" style="color:var(--muted)">échange du 2026-10-15</span></header>
+  <ol><li>Le travail est enregistré automatiquement : une coupure de courant ou d’internet ne fait rien perdre.</li><li>Chaque utilisateur a ses propres brouillons et peut y revenir.</li><li>Un brouillon est supprimé définitivement au bout d’1 mois. L’utilisateur en est informé à l’enregistrement.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.3</span><h3>Said recharge un solde</h3><span class="id" style="color:var(--muted)">échange du 2026-10-16</span></header>
+  <ol><li>L’acheteur choisit un forfait de recharge et paie Said en dehors de la plateforme.</li><li>Said ajoute les points du forfait au compte de l’acheteur dans le panneau d’administration, avec une note.</li><li>L’acheteur reçoit un reçu par e-mail et voit son nouveau solde.</li><li>Pour un remboursement, Said ajuste le solde à la main et rend lui-même l’argent.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.4</span><h3>Un administrateur publie un gabarit</h3><span class="id" style="color:var(--muted)">échange du 2026-10-16</span></header>
+  <ol><li>L’administrateur dépose un PSD.</li><li>Le convertisseur dans le cloud le met en file d’attente et indique le délai estimé.</li><li>Une fois la conversion terminée, le gabarit apparaît comme page de modèle.</li><li>Voie rapide, Khairou uniquement : il lance le convertisseur sur son propre PC et dépose le résultat manuellement. Il apparaît comme modèle sans attendre dans la file.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.5</span><h3>Parcours d’un designer extérieur (plus tard)</h3><span class="id" style="color:var(--muted)">échange du 2026-10-16</span></header>
+  <ol><li>Le designer crée un compte et soumet ses designs.</li><li>Said les examine et accepte ou refuse le designer.</li><li>Un designer accepté dépose des designs et propose un prix.</li><li>Le système convertit chaque design dans le cloud via une file d’attente et indique au designer un délai estimé.</li><li>Said examine le design et le prix, puis accepte ou refuse.</li><li>Un design accepté est mis en ligne.</li></ol></div></section>
+
+<section><h2 id="fr-requirements"><span class="n">05</span>Exigences</h2>
+  <h3>Acheteur</h3>
+  <div class="row"><span class="id">P-5.1</span>
+    <div class="text">Création de compte et connexion.<span class="acc">Validé quand : un utilisateur peut créer un compte, se connecter et retrouver ses brouillons. La connexion se fait par e-mail et mot de passe ou avec Google. L’acheteur confirme son adresse e-mail par un lien avant d’acheter.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.2</span>
+    <div class="text">Galerie de modèles indiquant le niveau et le prix en points de chacun, avec des aperçus filigranés.<span class="acc">Validé quand : chaque modèle affiche son niveau et son prix en points, et son aperçu porte le filigrane.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.3</span>
+    <div class="text">L’éditeur affiche le nom du modèle avec le nom de la page entre parenthèses, et passe d’une page à l’autre avec des flèches à gauche et à droite du canevas.<span class="acc">Validé quand : on peut parcourir un modèle de 6 ou 7 pages, et les modifications d’une page sont toujours là quand on y revient.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>prototype (reconstitué)</span></div></div>
+  <div class="row"><span class="id">P-5.4</span>
+    <div class="text">Édition des photos et des textes : placer des photos dans les zones du gabarit en mode ajuster ou remplir avec déplacement, modifier les textes, déplacer et redimensionner les blocs de texte, réordonner les calques.<span class="acc">Validé quand : un acheteur remplit une page sans ouvrir Photoshop.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>prototype (reconstitué)</span></div></div>
+  <div class="row"><span class="id">P-5.5</span>
+    <div class="text">Avertir l’acheteur quand une photo importée est trop petite pour bien s’imprimer en A0.<span class="acc">Validé quand : une photo de basse résolution affiche un avertissement clair avant l’export.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.6</span>
+    <div class="text">Enregistrement automatique des brouillons par utilisateur, supprimés au bout d’1 mois avec un avis à l’enregistrement.<span class="acc">Validé quand : couper le courant ou la connexion en pleine édition fait perdre au plus les dernières secondes.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.7</span>
+    <div class="text">Étape de vérification avant l’achat.<span class="acc">Validé quand : l’acheteur voit toutes les pages avant que le bouton Acheter soit disponible.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.8</span>
+    <div class="text">Acheter déduit le prix du modèle en points du solde de l’acheteur et lui envoie un reçu par e-mail.<span class="acc">Validé quand : avec assez de points, l’achat se fait aussitôt et débloque l’export ; avec trop peu, l’acheteur voit les forfaits de recharge. L’achat apparaît pour Said.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.9</span>
+    <div class="text">Chaque design porte un filigrane tant qu’il n’est pas acheté avec des points.<span class="acc">Validé quand : l’édition et les aperçus non payés montrent toujours le filigrane, l’export jamais.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.10</span>
+    <div class="text">Export d’un seul zip contenant toutes les pages en pleine résolution, disponible uniquement après paiement.<span class="acc">Validé quand : un modèle payé s’exporte en 1 minute au plus, avec des pages jusqu’à environ 10000 x 7000 px et des fichiers de 400 Mo ou plus. Un acheteur peut exporter un modèle acheté autant de fois qu’il le veut tant que son compte existe. Chaque zip est conservé 7 jours, puis refait sur demande.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-15</span></div></div>
+  <div class="row"><span class="id">P-5.11</span>
+    <div class="text">Interface en trois langues. L’arabe passe la mise en page de droite à gauche. Les forfaits de recharge s’affichent en DA avec .00 et les prix des modèles en points.<span class="acc">Validé quand : chaque langue est complète et l’arabe inverse la mise en page.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <h3>Administrateur</h3>
+  <div class="row"><span class="id">P-5.12</span>
+    <div class="text">Les administrateurs déposent un PSD. Le convertisseur dans le cloud le traite via une file d’attente et indique le délai estimé.<span class="acc">Validé quand : avec 20 designs en attente à 15 minutes chacun, un nouveau dépôt affiche environ 5 heures 15 minutes.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.13</span>
+    <div class="text">Said valide un design avant sa mise en ligne.<span class="acc">Validé quand : un design reste invisible pour les acheteurs tant que Said ne l’a pas accepté. Seule exception : le résultat que Khairou convertit sur son propre PC (voie rapide), mis en ligne sans cette validation.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.14</span>
+    <div class="text">Gérer les modèles : nom, pages, niveau et prix en points. Said fixe tous les prix.<span class="acc">Validé quand : Said peut créer un modèle à partir de pages et fixer son niveau et son prix.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.15</span>
+    <div class="text">Gérer les utilisateurs, designers compris.<span class="acc">Validé quand : un administrateur peut voir et gérer tous les comptes.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.16</span>
+    <div class="text">Recharger les points d’un utilisateur après un paiement hors plateforme, ajuster les soldes (remboursements compris) et consulter chaque transaction.<span class="acc">Validé quand : chaque modification d’un solde apparaît dans un historique avec son auteur, sa date et son motif.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.24</span>
+    <div class="text">Voie rapide, Khairou uniquement : convertir sur son propre PC et déposer le résultat manuellement. Il apparaît comme modèle sans attendre dans la file.<span class="acc">Validé quand : le résultat du convertisseur déposé apparaît comme modèle sans attente.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.25</span>
+    <div class="text">Chaque utilisateur a un solde de points et un historique complet des transactions. Les points n’expirent pas. Seuls les administrateurs ajoutent des points.<span class="acc">Validé quand : le solde est toujours égal à la somme de l’historique, et deux onglets ouverts ne peuvent pas dépenser deux fois les mêmes points.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.26</span>
+    <div class="text">Forfaits de recharge fixés par Said, chacun avec un prix en DA et un nombre de points. Les gros forfaits donnent plus de points par DA. Il existe des forfaits pour chaque usage, d’un seul gabarit de niveau 1 à 20 modèles de niveau 3.<span class="acc">Validé quand : l’acheteur voit chaque forfait avec son prix en DA.</span></div>
+    <div class="side"><span class="pill must">obligatoire</span><span>échange du 2026-10-16</span></div></div>
+  <h3>Plus tard</h3>
+  <div class="row"><span class="id">P-5.17</span>
+    <div class="text">Candidature des designers avec au moins N designs passés (N fixé après l’échange entre Khairou et Said), comptes designers et écran de gestion.<span class="acc">Validé quand : un designer peut postuler, être accepté et voir ses designs et leur statut.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.18</span>
+    <div class="text">Les designers déposent des PSD dans la même file de conversion que les administrateurs et voient le délai estimé pour leur propre dépôt.<span class="acc">Validé quand : le délai estimé d’un designer tient compte de tout ce qui est déjà dans la file, dépôts des administrateurs compris.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.19</span>
+    <div class="text">Les designers proposent un prix pour leur design ; Said l’accepte ou le refuse.<span class="acc">Validé quand : Said voit le prix proposé à côté du design pendant la validation.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.20</span>
+    <div class="text">Paiement par carte via Algérie Poste (cartes Dahabia et CIB).<span class="acc">Validé quand : un acheteur paie par carte sur la plateforme et les points sont ajoutés automatiquement.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.21</span>
+    <div class="text">Gestion automatique des commissions. Le taux est fixe et défini uniquement par Said.<span class="acc">Validé quand : chaque vente enregistre la commission du designer.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.22</span>
+    <div class="text">Plus de deux administrateurs, ou un administrateur bot.<span class="acc">Validé quand : on peut ajouter des rôles d’administration sans modifier le code.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.23</span>
+    <div class="text">Fonctions d’IA : un agent, des outils d’IA pour la modélisation (dont le passage d’une image de plan à un modèle 3D sommaire) et un agent d’IA qui vérifie les designs.<span class="acc">Validé quand : à définir au lancement de cette phase.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div>
+  <div class="row"><span class="id">P-5.27</span>
+    <div class="text">Un service d’abonnement en plus des points. Il nécessite d’abord une discussion avec Said.<span class="acc">Validé quand : à définir après cette discussion.</span></div>
+    <div class="side"><span class="pill later">plus tard</span><span>échange du 2026-10-16</span></div></div></section>
+
+<section><h2 id="fr-results"><span class="n">06</span>Résultats attendus</h2><ul class="plain"><li>Une présentation qui demandait une semaine sur Photoshop se fait en 15 minutes environ.</li><li>Un modèle complet s’exporte en 1 minute au plus.</li><li>Les exports s’impriment en A0 sans pixelisation visible. Les pages sont en pleine résolution, jusqu’à environ 10000 x 7000 px.</li><li>Une coupure de courant ou d’internet ne fait jamais perdre plus que les dernières secondes de travail.</li><li>Un PSD se convertit en 15 minutes au plus par modèle. Le prototype a mis environ 3 minutes pour un gabarit d’une page.</li><li>Réactivité de l’éditeur : objectif à fixer (voir Points ouverts).</li></ul></section>
+
+<section><h2 id="fr-variables"><span class="n">07</span>Variables</h2><div class="tablewrap"><table>
+  <thead><tr><th>Variable</th><th>Valeurs constatées</th><th>Par défaut</th></tr></thead>
+  <tbody><tr><td>Langue de l’interface</td><td>Français, arabe (de droite à gauche), anglais</td><td>Français</td></tr><tr><td>Devise</td><td>DA pour les forfaits de recharge, affiché avec .00 (par exemple 12000.00 DA). Les modèles sont en points.</td><td>DA</td></tr><tr><td>Niveau</td><td>Étudiant, architecte, bureau d’études. Un modèle étudiant peut compter 3 pages principales ; un modèle bureau ajoute 4 pages de détails professionnels.</td><td>Par modèle</td></tr><tr><td>Prix d’un modèle</td><td>Fixé par Said pour chaque modèle, en points, selon la complexité, le nombre de pages et la qualité</td><td>Fixé par Said</td></tr><tr><td>Forfaits de recharge</td><td>Forfaits en DA qui donnent des points. Les gros forfaits donnent plus de points par DA. Il existe un forfait pour chaque usage, d’un seul gabarit de niveau 1 à 20 modèles de niveau 3. Les taux seront décidés plus tard.</td><td>Fixé par Said</td></tr><tr><td>Taux de commission</td><td>Fixe, défini uniquement par Said</td><td>À fixer</td></tr><tr><td>Taille du canevas, DPI, règles de complexité</td><td>Exigés pour chaque design. Les noms de calques comptent le plus.</td><td>À fixer</td></tr><tr><td>Durée de conservation des brouillons</td><td>1 mois</td><td>1 mois</td></tr><tr><td>Stockage des photos de brouillons par utilisateur</td><td>1 Go au départ, à revoir si le stockage augmente</td><td>1 Go</td></tr><tr><td>Durée de conservation des exports</td><td>7 jours, puis supprimé et refait sur demande. Les exports sont illimités tant que le compte existe.</td><td>7 jours</td></tr><tr><td>Pages par modèle</td><td>3 pour un exemple étudiant, 6 ou 7 pour les modèles complets évoqués</td><td>Par modèle</td></tr></tbody>
+</table></div></section>
+
+<section><h2 id="fr-constraints"><span class="n">08</span>Contraintes</h2><ul class="plain"><li>Ordinateur uniquement.</li><li>La qualité d’impression en A0 est une exigence ferme. Les exports sont en pleine résolution.</li><li>Le convertisseur dans le cloud a besoin d’un serveur capable d’exécuter la conversion Python sur des PSD de plusieurs centaines de Mo, dès le lancement, puisque les dépôts des administrateurs passent par lui.</li><li>Les noms de calques doivent respecter la règle de nommage. Le convertisseur en dépend fortement, et un mauvais nom rend le fichier invalide.</li><li>Environ 4 mois avant le lancement.</li><li>Pas de paiement par carte au lancement. Les recharges sont payées à Said en dehors de la plateforme, et le paiement par carte nécessite d’abord une autorisation légale.</li><li>Les points n’expirent pas et ne sont pas remboursés automatiquement. Pour un remboursement, Said ajuste le solde à la main et rend lui-même l’argent.</li><li>Un solde ne doit jamais être faux : seuls les administrateurs ajoutent des points, chaque modification est enregistrée avec son auteur et son motif, et une dépense est vérifiée et appliquée en une seule étape.</li><li>Les coupures de courant et d’internet sont fréquentes en Algérie : l’enregistrement doit être automatique et fiable.</li><li>Les fichiers sont très lourds : pages d’environ 10000 x 7000 px et fichiers de 400 Mo ou plus. Le stockage, la bande passante et les limites du navigateur doivent être prévus.</li><li>Un acheteur ne doit jamais recevoir l’image propre en pleine résolution avant d’avoir acheté le modèle avec des points.</li><li>L’hébergement n’est pas encore choisi. Il dépend d’un objectif de performance que Khairou et Said doivent encore fixer.</li><li>Les brouillons sont supprimés définitivement au bout d’1 mois.</li></ul></section>
+
+<section><h2 id="fr-upgradability"><span class="n">09</span>Évolutivité</h2><ul class="plain"><li>Plus d’administrateurs, ou un bot.</li><li>Designers : candidatures, comptes, accès à la file de conversion, propositions de prix et commissions automatiques.</li><li>Paiement par carte via Algérie Poste, qui ajoute les points automatiquement.</li><li>Un service d’abonnement, à discuter avec Said.</li><li>Autres pays : plus de langues, de devises et de moyens de paiement.</li><li>D’autres domaines que l’architecture, comme le commerce (publicités) et l’événementiel (bannières). Les gabarits et les modèles ne doivent pas être liés à l’architecture.</li><li>Fonctions d’IA, dont le passage d’une image de plan à un modèle 3D sommaire.</li></ul></section>
+
+<section><h2 id="fr-scope"><span class="n">10</span>Hors périmètre</h2><div class="scope"><div><b>Comptes et candidatures des designers et propositions de prix des designers</b><span>Exclus des 4 premiers mois. Si Said engage des designers, il reçoit leurs fichiers et les dépose lui-même en tant qu’administrateur, via la file d’attente.</span></div><div><b>Paiement par carte et commissions automatiques</b><span>Nécessite d’abord une autorisation légale. Les recharges et les commissions sont gérées à la main par Said.</span></div><div><b>Service d’abonnement</b><span>Nécessite d’abord une discussion avec Said.</span></div><div><b>Fonctions d’IA</b><span>Projet futur.</span></div><div><b>Plusieurs administrateurs ou un bot</b><span>Said et Khairou suffisent au départ.</span></div><div><b>Téléphones et tablettes</b><span>La plateforme est volontairement réservée à l’ordinateur.</span></div></div></section>
+
+<section><h2 id="fr-open"><span class="n">11</span>Points ouverts</h2>
+  <div class="open"><span class="id">Point 1</span><p class="q">Combien de designs passés un designer doit-il soumettre pour postuler (N) ?</p><div class="who">Responsable : Khairou, après échange avec Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 2</span><p class="q">Règles exactes pour les designers : largeur et hauteur du canevas, DPI et règles de complexité.</p><div class="who">Responsables : Khairou et Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 3</span><p class="q">Objectif de performance de l’éditeur et de la plateforme. Il détermine l’hébergement.</p><div class="who">Responsables : Khairou et Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 4</span><p class="q">Le prix en points de chaque niveau et de chaque modèle, les forfaits de recharge (prix en DA et points) et le taux de commission.</p><div class="who">Responsable : Said · posé le 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Point 5</span><p class="q">Après un achat, combien d’exports l’acheteur peut-il faire ? Le prototype facture chaque export. L’achat d’un modèle peut donner droit à des téléchargements illimités de ce modèle, ou à un seul.</p><p class="ans">Réponse : illimité. Un acheteur peut exporter un modèle acheté autant de fois qu’il le veut tant que son compte existe. Un zip terminé est conservé 7 jours, puis supprimé, et refait sur demande.</p><div class="who">Réponse de Khairou, 2026-10-19 · à confirmer avec Said · posé le 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Point 6</span><p class="q">Un gabarit déposé par la voie rapide (converti sur le PC de Khairou) doit-il encore être validé par Said avant sa mise en ligne ? Même question pour les gabarits convertis via la file d’attente.</p><p class="ans">Réponse : un gabarit converti sur le PC de Khairou et déposé par la voie rapide est mis en ligne sans validation de Said. Les gabarits convertis via la file d’attente la nécessitent toujours.</p><div class="who">Réponse de Khairou, 2026-10-19 · à confirmer avec Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 7</span><p class="q">Où se fait le rendu de l’export : dans le navigateur ou sur un serveur ? Des pages de 10000 x 7000 px, 6 ou 7 par zip, peuvent dépasser la mémoire du navigateur, et un serveur évite aussi de livrer l’image propre aux utilisateurs qui n’ont pas payé.</p><div class="who">Responsable : Khairou (choix d’architecture) · posé le 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Point 8</span><p class="q">Coût de stockage des brouillons et de leurs photos pendant 1 mois. Faut-il une limite de taille par utilisateur ?</p><p class="ans">Réponse : 1 Go de photos de brouillons par utilisateur au départ, à revoir si le stockage augmente.</p><div class="who">Réponse de Khairou, 2026-10-19 · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 9</span><p class="q">Quel service d’e-mail envoie les reçus, et depuis quelle adresse ? Service choisi : Resend (2026-10-19). L’adresse d’expédition reste à choisir : elle nécessite un nom de domaine, que Said fournira.</p><div class="who">Responsable : Khairou · posé le 2026-10-16</div></div>
+  <div class="open answered"><span class="id">Point 10</span><p class="q">Confirmer la date de lancement. Les 4 mois sont comptés à partir du 2026-10-16.</p><p class="ans">Réponse : confirmée. Le lancement est prévu vers la mi-février 2027.</p><div class="who">Réponse de Khairou, 2026-10-21 · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 11</span><p class="q">Un solde de points prépayé a-t-il des conséquences fiscales ou comptables en Algérie ? À vérifier avec le comptable de Said.</p><div class="who">Responsable : Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 12</span><p class="q">Comment calculer la commission d’un designer, sachant que les points sont vendus à des tarifs différents ? Par exemple, sur la valeur en DA payée pour les points dépensés.</p><div class="who">Responsables : Khairou et Said · posé le 2026-10-16</div></div>
+  <div class="open"><span class="id">Point 13</span><p class="q">Faut-il un service d’abonnement en plus des points, et comment fonctionnerait-il ? Phase ultérieure.</p><div class="who">Responsable : Said · posé le 2026-10-16</div></div></section>
+</main>
+  </div>
+
+</div>
+<div class="wrap" data-lang="ar" lang="ar" dir="rtl" hidden>
+  <div class="bar"><b>الخطة</b><a href="https://claude.ai/artifact/JkPiusgky9b5qAf11fUDhQ" target="_blank" rel="noopener">سجل البناء</a><a href="https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH" target="_blank" rel="noopener">المخطط التقني</a><a href="https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P" target="_blank" rel="noopener">السجل التاريخي</a><a href="https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub" target="_blank" rel="noopener">دليل الأنماط</a></div>
+  <div class="mast">
+    <h1>ArchPresent</h1>
+    <p class="doc">الخطة</p>
+    <dl class="meta">
+      <div><dt>العميل</dt><dd>سعيد، مهندس معماري (مكتبه الخاص)</dd></div>
+      <div><dt>دفتر الشروط</dt><dd>لا توجد وثيقة مكتوبة. أُعدّت الخطة انطلاقًا من نقاشات يومي <span class="d">2026-10-15</span> و2026-10-16</dd></div>
+      <div><dt>الهدف</dt><dd>إطلاق المنصة بعد نحو 4 أشهر من <span class="d">2026-10-16</span> (حوالي منتصف فيفري 2027)</dd></div>
+      <div><dt>الحالة</dt><dd><span class="pill must">معتمدة</span></dd></div>
+    </dl>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="الأقسام"><ol><li><a href="#ar-summary">01 الملخص</a></li><li><a href="#ar-context">02 العميل والسياق</a></li><li><a href="#ar-users">03 المستخدمون</a></li><li><a href="#ar-workflows">04 مسارات العمل</a></li><li><a href="#ar-requirements">05 المتطلبات</a></li><li><a href="#ar-results">06 النتائج المرجوّة</a></li><li><a href="#ar-variables">07 المتغيّرات</a></li><li><a href="#ar-constraints">08 القيود</a></li><li><a href="#ar-upgradability">09 قابلية التطوير</a></li><li><a href="#ar-scope">10 خارج النطاق</a></li><li><a href="#ar-open">11 نقاط مفتوحة</a></li></ol></nav>
+    <main>
+<section><h2 id="ar-summary"><span class="n">01</span>الملخص</h2><p class="lead">ArchPresent منصة ويب للحاسوب يُنشئ فيها المهندسون المعماريون والطلبة ومكاتب الدراسات عروضًا معمارية جاهزة للطباعة في نحو 15 دقيقة، بدل أسبوع كامل على فوتوشوب. يُسمّى العرض «نموذجًا» ويتكوّن من عدة صفحات. كل صفحة قالب فوتوشوب محوَّل إلى قالب قابل للتعديل على الويب. أهم ما يجب أن تتقنه المنصة هو السرعة، دون التفريط في الجودة اللازمة للطباعة بمقاس A0.</p></section>
+
+<section><h2 id="ar-context"><span class="n">02</span>العميل والسياق</h2><ul class="plain"><li>سعيد مهندس معماري له مكتبه الخاص ويعمل بالطريقة التقليدية. أراد أداة تسرّع عمله، ثم قرّر بيعها للجمهور: مهندسون معماريون آخرون وطلبة ومكاتب دراسات.</li><li>صمّم سعيد القوالب الأولى بنفسه. لاحقًا سيصمّمها مصمّمون من الخارج يتقاضون عمولة على كل نسخة تُباع.</li><li>يوجد نموذج أولي يعمل، عُرض على سعيد فوافق على إتمامه. محوّل ملفات PSD والمحرّر يعملان محليًا. تسجيل الدخول والدفع مجرّد واجهات مؤقتة، ولا شيء مستضاف ولا شيء يُحفظ بعد.</li><li>تعمل المنصة باسم المكتب. لا توجد قواعد قانونية معروفة تفرض مكان تخزين البيانات، ويمكن استضافتها في أي مكان.</li></ul></section>
+
+<section><h2 id="ar-users"><span class="n">03</span>المستخدمون</h2><div class="cards">
+  <div class="card"><h3>المشتري</h3><dl>
+    <div><dt>من هو</dt><dd>الطلبة والمهندسون المعماريون ومكاتب الدراسات. يتّبع الثلاثة المسار نفسه، ولا يختلف إلا الجودة والسعر (انظر المستويات في المتغيّرات).</dd></div>
+    <div><dt>ماذا يفعل</dt><dd>يختار نموذجًا، يضيف الصور والنصوص، يراجع، يشتري، يصدّر ويطبع.</dd></div>
+    <div><dt>الجهاز</dt><dd>الحاسوب فقط. الهواتف واللوحات غير مدعومة.</dd></div>
+    <div><dt>ما يخشاه</dt><dd>جودة طباعة تبدو جيدة على الشاشة لكنها تظهر مربّعات بمقاس A0. ضياع العمل بسبب انقطاع الكهرباء أو الإنترنت. بطء التصدير.</dd></div>
+  </dl></div>
+  <div class="card"><h3>المسؤول</h3><dl>
+    <div><dt>من هو</dt><dd>سعيد وخيرو في البداية. مسؤولون آخرون أو روبوت لاحقًا.</dd></div>
+    <div><dt>ماذا يفعل</dt><dd>يرفع ملفات PSD التي تحوّلها المنصة عبر طابور. يراجع التصاميم وينشرها، يدير النماذج والأسعار والمستخدمين، ويشحن أرصدة المستخدمين. ويستطيع خيرو أيضًا التحويل على حاسوبه الخاص ورفع الناتج، فيتجاوز الطابور.</dd></div>
+    <div><dt>الجهاز</dt><dd>الحاسوب.</dd></div>
+    <div><dt>ما يخشاه</dt><dd>نشر قالب رديء. رصيد خاطئ.</dd></div>
+  </dl></div>
+  <div class="card"><h3>المصمّم</h3><dl>
+    <div><dt>من هو</dt><dd>مصمّمون من الخارج يصنعون القوالب ويتقاضون عمولة. ليسوا ضمن الأشهر الأربعة الأولى.</dd></div>
+    <div><dt>ماذا يفعل</dt><dd>لاحقًا: يتقدّم بتصاميم سابقة، يرفع ملفات PSD، يقترح سعرًا، ويتابع طابور التحويل مع مدة متوقّعة.</dd></div>
+    <div><dt>الجهاز</dt><dd>الحاسوب.</dd></div>
+    <div><dt>ما يخشاه</dt><dd>رفض تصميم بسبب أسماء الطبقات أو قواعد الدقّة.</dd></div>
+  </dl></div></div></section>
+
+<section><h2 id="ar-workflows"><span class="n">04</span>مسارات العمل</h2>
+  <div class="wf"><header><span class="id">P-4.1</span><h3>المشتري يُنشئ نموذجًا ويشتريه</h3><span class="id" style="color:var(--muted)">نقاش <span class="d">2026-10-15</span></span></header>
+  <ol><li>تصفّح النماذج المتاحة.</li><li>اختيار نموذج وفتحه في المحرّر.</li><li>إضافة الصور والنصوص في كل صفحة، إعادة ترتيب الطبقات، تحريك النصوص وتغيير حجمها.</li><li>مراجعة النموذج المكتمل.</li><li>الضغط على «شراء». يُخصم سعر النموذج بالنقاط من رصيد المشتري. وإن كان الرصيد غير كافٍ تُعرض عليه باقات الشحن.</li><li>تختفي العلامة المائية ويُفتح التصدير فورًا.</li><li>تصدير وتحميل ملف zip واحد يضمّ كل الصفحات بالدقّة الكاملة.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.2</span><h3>المسودّات محفوظة وتصمد أمام الانقطاعات</h3><span class="id" style="color:var(--muted)">نقاش <span class="d">2026-10-15</span></span></header>
+  <ol><li>يُحفظ العمل تلقائيًا، فلا يضيع شيء عند انقطاع الكهرباء أو الإنترنت.</li><li>لكل مستخدم مسوّداته الخاصة ويمكنه العودة إليها.</li><li>تُحذف المسوّدة نهائيًا بعد شهر واحد، ويُعلَم المستخدم بذلك عند حفظها.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.3</span><h3>سعيد يشحن رصيدًا</h3><span class="id" style="color:var(--muted)">نقاش <span class="d">2026-10-16</span></span></header>
+  <ol><li>يختار المشتري باقة شحن ويدفع لسعيد خارج المنصة.</li><li>يضيف سعيد نقاط الباقة إلى حساب المشتري في لوحة الإدارة، مع ملاحظة.</li><li>يصل المشتري وصل بالبريد الإلكتروني ويرى رصيده الجديد.</li><li>عند الاسترجاع، يعدّل سعيد الرصيد يدويًا ويردّ المال بنفسه.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.4</span><h3>مسؤول ينشر قالبًا</h3><span class="id" style="color:var(--muted)">نقاش <span class="d">2026-10-16</span></span></header>
+  <ol><li>يرفع المسؤول ملف PSD.</li><li>يضعه المحوّل السحابي في الطابور ويعرض موعد الانتهاء المتوقّع.</li><li>عند انتهاء التحويل يظهر القالب صفحةً في نموذج.</li><li>المسار السريع، لخيرو وحده: يشغّل المحوّل على حاسوبه الخاص ويرفع الناتج يدويًا. يظهر نموذجًا دون انتظار الطابور.</li></ol></div>
+  <div class="wf"><header><span class="id">P-4.5</span><h3>مسار المصمّم الخارجي (لاحقًا)</h3><span class="id" style="color:var(--muted)">نقاش <span class="d">2026-10-16</span></span></header>
+  <ol><li>ينشئ المصمّم حسابًا ويقدّم تصاميمه.</li><li>يراجعها سعيد ويقبل المصمّم أو يرفضه.</li><li>المصمّم المقبول يرفع تصاميم ويقترح سعرًا.</li><li>يحوّل النظام كل تصميم في السحابة عبر طابور، ويعرض على المصمّم موعد الانتهاء المتوقّع.</li><li>يراجع سعيد التصميم والسعر، ثم يقبل أو يرفض.</li><li>يُنشر التصميم المقبول.</li></ol></div></section>
+
+<section><h2 id="ar-requirements"><span class="n">05</span>المتطلبات</h2>
+  <h3>المشتري</h3>
+  <div class="row"><span class="id">P-5.1</span>
+    <div class="text">إنشاء حساب وتسجيل الدخول.<span class="acc">يُعدّ منجزًا حين: يستطيع المستخدم إنشاء حساب وتسجيل الدخول والعثور على مسوّداته. يتم تسجيل الدخول بالبريد الإلكتروني وكلمة المرور أو عبر Google. ويؤكّد المشتري عنوان بريده الإلكتروني عبر رابط قبل الشراء.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-15</span></span></div></div>
+  <div class="row"><span class="id">P-5.2</span>
+    <div class="text">معرض للنماذج يبيّن مستوى كل نموذج وسعره بالنقاط، مع معاينات تحمل علامة مائية.<span class="acc">يُعدّ منجزًا حين: يعرض كل نموذج مستواه وسعره بالنقاط، وتحمل معاينته العلامة المائية.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-15</span></span></div></div>
+  <div class="row"><span class="id">P-5.3</span>
+    <div class="text">يعرض المحرّر اسم النموذج مع اسم الصفحة بين قوسين، وينتقل بين الصفحات بأسهم على يمين اللوحة ويسارها.<span class="acc">يُعدّ منجزًا حين: يمكن تصفّح نموذج من 6 أو 7 صفحات، وتبقى تعديلات الصفحة عند العودة إليها.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>النموذج الأولي (مُعاد بناؤه)</span></div></div>
+  <div class="row"><span class="id">P-5.4</span>
+    <div class="text">تحرير الصور والنصوص: رفع الصور إلى مناطق القالب مع الملاءمة أو الملء والتحريك، تعديل النصوص، سحب مربّعات النص وتغيير حجمها، إعادة ترتيب الطبقات.<span class="acc">يُعدّ منجزًا حين: يملأ المشتري صفحة دون فتح فوتوشوب.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>النموذج الأولي (مُعاد بناؤه)</span></div></div>
+  <div class="row"><span class="id">P-5.5</span>
+    <div class="text">تنبيه المشتري حين تكون الصورة المرفوعة أصغر من أن تُطبع جيدًا بمقاس A0.<span class="acc">يُعدّ منجزًا حين: تُظهر الصورة منخفضة الدقّة تنبيهًا واضحًا قبل التصدير.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.6</span>
+    <div class="text">حفظ تلقائي للمسوّدات لكل مستخدم، تُحذف بعد شهر مع إشعار عند الحفظ.<span class="acc">يُعدّ منجزًا حين: لا يضيع عند قطع الكهرباء أو الاتصال أثناء التحرير إلا آخر بضع ثوانٍ على الأكثر.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.7</span>
+    <div class="text">خطوة مراجعة قبل الشراء.<span class="acc">يُعدّ منجزًا حين: يرى المشتري كل الصفحات قبل أن يصبح زر «شراء» متاحًا.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-15</span></span></div></div>
+  <div class="row"><span class="id">P-5.8</span>
+    <div class="text">يخصم «شراء» سعر النموذج بالنقاط من رصيد المشتري ويرسل إليه وصلًا بالبريد الإلكتروني.<span class="acc">يُعدّ منجزًا حين: مع نقاط كافية تتمّ عملية الشراء فورًا ويُفتح التصدير، ومع نقاط قليلة يرى المشتري باقات الشحن. وتظهر عملية الشراء لدى سعيد.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.9</span>
+    <div class="text">يحمل كل تصميم علامة مائية إلى أن يُشترى بالنقاط.<span class="acc">يُعدّ منجزًا حين: يُظهر التحرير والمعاينات غير المدفوعة العلامة المائية دائمًا، ولا يُظهرها التصدير أبدًا.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-15</span></span></div></div>
+  <div class="row"><span class="id">P-5.10</span>
+    <div class="text">تصدير ملف zip واحد يضمّ كل الصفحات بالدقّة الكاملة، لا يتاح إلا بعد الدفع.<span class="acc">يُعدّ منجزًا حين: يُصدَّر النموذج المدفوع في دقيقة واحدة على الأكثر، بصفحات تصل إلى نحو 10000 × 7000 بكسل وملفات بحجم 400 ميغابايت أو أكثر. يمكن للمشتري تصدير النموذج المشترى عدد المرات التي يريد ما دام حسابه قائمًا. يُحتفظ بكل ملف zip لمدة 7 أيام ثم يُعاد إنشاؤه عند الطلب.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-15</span></span></div></div>
+  <div class="row"><span class="id">P-5.11</span>
+    <div class="text">واجهة بثلاث لغات. تقلب العربية اتجاه التخطيط من اليمين إلى اليسار. تُعرض باقات الشحن بالدينار مع .00 وأسعار النماذج بالنقاط.<span class="acc">يُعدّ منجزًا حين: تكتمل كل لغة، وتعكس العربية التخطيط.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <h3>المسؤول</h3>
+  <div class="row"><span class="id">P-5.12</span>
+    <div class="text">يرفع المسؤولون ملف PSD، ويعالجه المحوّل السحابي عبر طابور ويعرض موعد الانتهاء المتوقّع.<span class="acc">يُعدّ منجزًا حين: مع 20 تصميمًا في الطابور بمعدّل 15 دقيقة لكل منها، يُظهر الرفع الجديد نحو 5 ساعات و15 دقيقة.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.13</span>
+    <div class="text">يراجع سعيد التصميم قبل نشره.<span class="acc">يُعدّ منجزًا حين: يبقى التصميم مخفيًا عن المشترين حتى يقبله سعيد. الاستثناء الوحيد هو الناتج الذي يحوّله خيرو على حاسوبه الخاص (المسار السريع)، فيُنشر دون هذه المراجعة.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.14</span>
+    <div class="text">إدارة النماذج: الاسم والصفحات والمستوى والسعر بالنقاط. سعيد هو من يحدّد كل الأسعار.<span class="acc">يُعدّ منجزًا حين: يستطيع سعيد إنشاء نموذج من صفحات وتحديد مستواه وسعره.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.15</span>
+    <div class="text">إدارة المستخدمين، بمن فيهم المصمّمون.<span class="acc">يُعدّ منجزًا حين: يرى المسؤول كل الحسابات ويديرها.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.16</span>
+    <div class="text">شحن نقاط المستخدم بعد دفع خارج المنصة، وتعديل الأرصدة (بما فيها الاسترجاع)، ورؤية كل معاملة.<span class="acc">يُعدّ منجزًا حين: يظهر كل تغيير في الرصيد في سجل يبيّن من أجراه ومتى ولماذا.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.24</span>
+    <div class="text">المسار السريع، لخيرو وحده: التحويل على حاسوبه الخاص ورفع الناتج يدويًا. يظهر نموذجًا دون انتظار الطابور.<span class="acc">يُعدّ منجزًا حين: يظهر ناتج المحوّل المرفوع نموذجًا دون أي انتظار في الطابور.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.25</span>
+    <div class="text">لكل مستخدم رصيد نقاط وسجل كامل للمعاملات. لا تنتهي صلاحية النقاط. المسؤولون وحدهم يضيفون النقاط.<span class="acc">يُعدّ منجزًا حين: يساوي الرصيد دائمًا مجموع السجل، ولا يستطيع تبويبان مفتوحان إنفاق النقاط نفسها مرتين.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.26</span>
+    <div class="text">باقات شحن يحدّدها سعيد، لكل منها سعر بالدينار وعدد من النقاط. تمنح الباقات الأكبر نقاطًا أكثر لكل دينار. توجد باقات لكل استعمال، من قالب واحد من المستوى 1 إلى 20 نموذجًا من المستوى 3.<span class="acc">يُعدّ منجزًا حين: يرى المشتري كل باقة بسعرها بالدينار.</span></div>
+    <div class="side"><span class="pill must">إلزامي</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <h3>لاحقًا</h3>
+  <div class="row"><span class="id">P-5.17</span>
+    <div class="text">طلب انضمام المصمّمين بعدد N على الأقل من التصاميم السابقة (يُحدَّد N بعد نقاش خيرو مع سعيد)، وحسابات المصمّمين وشاشة لإدارتها.<span class="acc">يُعدّ منجزًا حين: يستطيع المصمّم التقدّم والقبول ورؤية تصاميمه وحالتها.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.18</span>
+    <div class="text">يرفع المصمّمون ملفات PSD إلى طابور التحويل نفسه الذي يستخدمه المسؤولون، ويرون موعد الانتهاء المتوقّع لما رفعوه.<span class="acc">يُعدّ منجزًا حين: يحسب موعد المصمّم المتوقّع كل ما هو في الطابور أصلًا، بما فيه ما رفعه المسؤولون.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.19</span>
+    <div class="text">يقترح المصمّمون سعرًا لتصميمهم، ويقبله سعيد أو يرفضه.<span class="acc">يُعدّ منجزًا حين: يرى سعيد السعر المقترح بجانب التصميم أثناء المراجعة.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.20</span>
+    <div class="text">الدفع بالبطاقة عبر بريد الجزائر (بطاقتا الذهبية وCIB).<span class="acc">يُعدّ منجزًا حين: يدفع المشتري بالبطاقة على المنصة وتُضاف النقاط تلقائيًا.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.21</span>
+    <div class="text">معالجة آلية للعمولات. النسبة ثابتة ويحدّدها سعيد وحده.<span class="acc">يُعدّ منجزًا حين: تسجّل كل عملية بيع عمولة المصمّم.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.22</span>
+    <div class="text">أكثر من مسؤولَين، أو مسؤول آلي (روبوت).<span class="acc">يُعدّ منجزًا حين: يمكن إضافة أدوار إدارية دون تعديل الشيفرة.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.23</span>
+    <div class="text">ميزات الذكاء الاصطناعي: وكيل ذكي، أدوات ذكاء اصطناعي للنمذجة (منها تحويل صورة مخطط إلى نموذج ثلاثي الأبعاد مبدئي)، ووكيل ذكي يراجع التصاميم.<span class="acc">يُعدّ منجزًا حين: يُحدَّد عند بدء هذه المرحلة.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div>
+  <div class="row"><span class="id">P-5.27</span>
+    <div class="text">خدمة اشتراك إلى جانب النقاط. تحتاج أولًا إلى نقاش مع سعيد.<span class="acc">يُعدّ منجزًا حين: يُحدَّد بعد ذلك النقاش.</span></div>
+    <div class="side"><span class="pill later">لاحقًا</span><span>نقاش <span class="d">2026-10-16</span></span></div></div></section>
+
+<section><h2 id="ar-results"><span class="n">06</span>النتائج المرجوّة</h2><ul class="plain"><li>عرض كان يستغرق أسبوعًا على فوتوشوب يُنجَز في نحو 15 دقيقة.</li><li>يُصدَّر النموذج الكامل في دقيقة واحدة على الأكثر.</li><li>تُطبع الصادرات بمقاس A0 دون تقطّع ظاهر. الصفحات بالدقّة الكاملة، حتى نحو 10000 × 7000 بكسل.</li><li>لا يضيع عند انقطاع الكهرباء أو الإنترنت أكثر من آخر بضع ثوانٍ من العمل.</li><li>يُحوَّل ملف PSD في 15 دقيقة على الأكثر لكل نموذج. استغرق النموذج الأولي نحو 3 دقائق لقالب من صفحة واحدة.</li><li>سرعة استجابة المحرّر: هدف يُحدَّد لاحقًا (انظر النقاط المفتوحة).</li></ul></section>
+
+<section><h2 id="ar-variables"><span class="n">07</span>المتغيّرات</h2><div class="tablewrap"><table>
+  <thead><tr><th>المتغيّر</th><th>القيم المرصودة</th><th>الافتراضي</th></tr></thead>
+  <tbody><tr><td>لغة الواجهة</td><td>الفرنسية، العربية (من اليمين إلى اليسار)، الإنجليزية</td><td>الفرنسية</td></tr><tr><td>العملة</td><td>الدينار (DA) لباقات الشحن، يُعرض مع .00 (مثلًا 12000.00 DA). تُسعَّر النماذج بالنقاط.</td><td>DA</td></tr><tr><td>المستوى</td><td>طالب، مهندس معماري، مكتب دراسات. قد يضمّ نموذج الطالب 3 صفحات رئيسية، ويضيف نموذج المكتب 4 صفحات من التفاصيل المهنية.</td><td>حسب النموذج</td></tr><tr><td>سعر النموذج</td><td>يحدّده سعيد لكل نموذج بالنقاط حسب التعقيد وعدد الصفحات والجودة</td><td>يحدّده سعيد</td></tr><tr><td>باقات الشحن</td><td>باقات بالدينار تمنح نقاطًا. تمنح الباقات الأكبر نقاطًا أكثر لكل دينار. توجد باقة لكل استعمال، من قالب واحد من المستوى 1 إلى 20 نموذجًا من المستوى 3. تُحدَّد النسب لاحقًا.</td><td>يحدّده سعيد</td></tr><tr><td>نسبة العمولة</td><td>ثابتة، يحدّدها سعيد وحده</td><td>تُحدَّد لاحقًا</td></tr><tr><td>مقاس اللوحة، الدقّة (DPI)، قواعد التعقيد</td><td>مطلوبة في كل تصميم. أسماء الطبقات هي الأهم.</td><td>تُحدَّد لاحقًا</td></tr><tr><td>مدة الاحتفاظ بالمسوّدات</td><td>شهر واحد</td><td>شهر واحد</td></tr><tr><td>مساحة صور المسوّدات لكل مستخدم</td><td>1 غيغابايت في البداية، وتُراجَع إذا ازداد التخزين</td><td>1 غيغابايت</td></tr><tr><td>مدة الاحتفاظ بملفات التصدير</td><td>7 أيام، ثم تُحذف وتُعاد عند الطلب. التصدير غير محدود ما دام الحساب قائمًا.</td><td>7 أيام</td></tr><tr><td>عدد الصفحات في النموذج</td><td>3 في مثال الطالب، 6 أو 7 في النماذج الكاملة التي نوقشت</td><td>حسب النموذج</td></tr></tbody>
+</table></div></section>
+
+<section><h2 id="ar-constraints"><span class="n">08</span>القيود</h2><ul class="plain"><li>الحاسوب فقط.</li><li>جودة الطباعة بمقاس A0 شرط لا تنازل عنه. الصادرات بالدقّة الكاملة.</li><li>يحتاج المحوّل السحابي إلى خادم قادر على تشغيل تحويل بايثون على ملفات PSD بحجم مئات الميغابايت، منذ الإطلاق، لأن ما يرفعه المسؤولون يمرّ عبره.</li><li>يجب أن تتبع أسماء الطبقات قاعدة التسمية.</li> يعتمد المحوّل عليها كثيرًا، والاسم الخاطئ يجعل الملف غير صالح.</li><li>نحو 4 أشهر حتى الإطلاق.</li><li>لا دفع بالبطاقة عند الإطلاق. تُدفع عمليات الشحن لسعيد خارج المنصة، ويتطلّب الدفع بالبطاقة ترخيصًا قانونيًا أولًا.</li><li>لا تنتهي صلاحية النقاط ولا تُسترجع تلقائيًا. عند الاسترجاع يعدّل سعيد الرصيد يدويًا ويردّ المال بنفسه.</li><li>يجب ألّا يكون الرصيد خاطئًا أبدًا: المسؤولون وحدهم يضيفون النقاط، ويُسجَّل كل تغيير مع من أجراه وسببه، ويُتحقَّق من أي إنفاق ويُطبَّق في خطوة واحدة.</li><li>انقطاعات الكهرباء والإنترنت شائعة في الجزائر، لذا يجب أن يكون الحفظ تلقائيًا ومتينًا.</li><li>الملفات كبيرة جدًا: صفحات بنحو 10000 × 7000 بكسل وملفات بحجم 400 ميغابايت أو أكثر. يجب التخطيط للتخزين وعرض النطاق وحدود المتصفّح.</li><li>لا يجوز أبدًا أن يتسلّم المشتري الصورة النظيفة بالدقّة الكاملة قبل شراء النموذج بالنقاط.</li><li>لم تُختر الاستضافة بعد. وهي تتوقّف على هدف أداء لم يحدّده خيرو وسعيد بعد.</li><li>تُحذف المسوّدات نهائيًا بعد شهر واحد.</li></ul></section>
+
+<section><h2 id="ar-upgradability"><span class="n">09</span>قابلية التطوير</h2><ul class="plain"><li>مسؤولون أكثر، أو روبوت.</li><li>المصمّمون: طلبات الانضمام، الحسابات، الوصول إلى طابور التحويل، اقتراح الأسعار، والعمولات الآلية.</li><li>الدفع بالبطاقة عبر بريد الجزائر، وتُضاف به النقاط تلقائيًا.</li><li>خدمة اشتراك، تُناقَش مع سعيد.</li><li>بلدان أخرى: لغات وعملات ووسائل دفع إضافية.</li><li>مجالات أخرى غير الهندسة المعمارية، كالتجارة (الإعلانات) والفعاليات (اللافتات). يجب ألّا تكون القوالب والنماذج مرتبطة بالهندسة المعمارية.</li><li>ميزات الذكاء الاصطناعي، منها تحويل صورة مخطط إلى نموذج ثلاثي الأبعاد مبدئي.</li></ul></section>
+
+<section><h2 id="ar-scope"><span class="n">10</span>خارج النطاق</h2><div class="scope"><div><b>حسابات المصمّمين وطلبات انضمامهم، واقتراحات الأسعار من المصمّمين</b><span>مستبعدة من الأشهر الأربعة الأولى. إن وظّف سعيد مصمّمين، يتسلّم ملفاتهم ويرفعها بنفسه بصفته مسؤولًا، عبر الطابور.</span></div><div><b>الدفع بالبطاقة والعمولات الآلية</b><span>يتطلّب ترخيصًا قانونيًا أولًا. يتولّى سعيد عمليات الشحن والعمولات يدويًا.</span></div><div><b>خدمة الاشتراك</b><span>تحتاج أولًا إلى نقاش مع سعيد.</span></div><div><b>ميزات الذكاء الاصطناعي</b><span>خطة مستقبلية.</span></div><div><b>عدّة مسؤولين أو روبوت</b><span>يكفي سعيد وخيرو في البداية.</span></div><div><b>الهواتف واللوحات</b><span>المنصة مخصّصة للحاسوب فقط عن قصد.</span></div></div></section>
+
+<section><h2 id="ar-open"><span class="n">11</span>نقاط مفتوحة</h2>
+  <div class="open"><span class="id">نقطة 1</span><p class="q">كم تصميمًا سابقًا يجب أن يقدّم المصمّم ليتقدّم (N)؟</p><div class="who">المسؤول: خيرو، بعد النقاش مع سعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 2</span><p class="q">القواعد الدقيقة للمصمّمين: عرض اللوحة وارتفاعها، الدقّة (DPI)، وقواعد التعقيد.</p><div class="who">المسؤولان: خيرو وسعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 3</span><p class="q">هدف الأداء للمحرّر وللمنصة. وهو ما يحدّد الاستضافة.</p><div class="who">المسؤولان: خيرو وسعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 4</span><p class="q">سعر كل مستوى وكل نموذج بالنقاط، وباقات الشحن (السعر بالدينار وعدد النقاط)، ونسبة العمولة.</p><div class="who">المسؤول: سعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open answered"><span class="id">نقطة 5</span><p class="q">بعد عملية شراء واحدة، كم مرّة يمكن للمشتري التصدير؟ يحتسب النموذج الأولي كل تصدير على حدة. قد يعني شراء النموذج تحميلًا غير محدود لذلك النموذج، أو تحميلًا واحدًا.</p><p class="ans">الجواب: غير محدود. يمكن للمشتري تصدير النموذج الذي اشتراه عدد المرات التي يريد ما دام حسابه قائمًا. يُحتفظ بملف zip المنجز 7 أيام ثم يُحذف، ويُعاد إنشاؤه عند الطلب.</p><div class="who">أجاب خيرو في <span class="d">2026-10-19</span> · يُؤكَّد مع سعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open answered"><span class="id">نقطة 6</span><p class="q">هل يحتاج قالب رُفع عبر المسار السريع (حُوِّل على حاسوب خيرو) إلى مراجعة سعيد قبل نشره؟ والسؤال نفسه عن القوالب المحوَّلة عبر الطابور.</p><p class="ans">الجواب: القالب الذي يحوّله خيرو على حاسوبه ويرفعه عبر المسار السريع يُنشر دون مراجعة سعيد. أما القوالب المحوَّلة عبر الطابور فتبقى بحاجة إليها.</p><div class="who">أجاب خيرو في <span class="d">2026-10-19</span> · يُؤكَّد مع سعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 7</span><p class="q">أين يتمّ إخراج التصدير: في المتصفّح أم على خادم؟ صفحات بمقاس 10000 × 7000 بكسل، 6 أو 7 في كل ملف zip، قد تتجاوز ذاكرة المتصفّح، كما أن الخادم يحمي الصورة النظيفة من المستخدمين الذين لم يدفعوا.</p><div class="who">المسؤول: خيرو (قرار معماري تقني) · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open answered"><span class="id">نقطة 8</span><p class="q">تكلفة تخزين المسوّدات وصورها المرفوعة لمدة شهر. هل يُحدَّد حجم أقصى لكل مستخدم؟</p><p class="ans">الجواب: 1 غيغابايت من صور المسوّدات لكل مستخدم في البداية، وتُراجَع إذا ازداد التخزين.</p><div class="who">أجاب خيرو في <span class="d">2026-10-19</span> · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 9</span><p class="q">أي خدمة بريد إلكتروني تُرسل الوصولات، ومن أي عنوان؟ الخدمة المختارة: Resend (<span class="d">2026-10-19</span>). عنوان المرسِل لم يُحدَّد بعد ويتطلب اسم نطاق، وسيوفّره سعيد.</p><div class="who">المسؤول: خيرو · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open answered"><span class="id">نقطة 10</span><p class="q">تأكيد تاريخ الإطلاق. تُحتسب الأشهر الأربعة ابتداءً من <span class="d">2026-10-16</span>.</p><p class="ans">الجواب: مؤكَّد. الإطلاق في حدود منتصف فبراير 2027.</p><div class="who">أجاب خيرو في <span class="d">2026-10-21</span> · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 11</span><p class="q">هل لرصيد النقاط المدفوع مسبقًا آثار ضريبية أو محاسبية في الجزائر؟ يُراجَع مع محاسب سعيد.</p><div class="who">المسؤول: سعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 12</span><p class="q">كيف تُحسب عمولة المصمّم ما دامت النقاط تُباع بأسعار مختلفة؟ مثلًا على أساس قيمة الدينار المدفوعة مقابل النقاط المنفقة.</p><div class="who">المسؤولان: خيرو وسعيد · طُرحت في <span class="d">2026-10-16</span></div></div>
+  <div class="open"><span class="id">نقطة 13</span><p class="q">هل تُضاف خدمة اشتراك إلى جانب النقاط، وكيف ستعمل؟ مرحلة لاحقة.</p><div class="who">المسؤول: سعيد · طُرحت في <span class="d">2026-10-16</span></div></div></section>
+</main>
+  </div>
+
+</div>
+<script>
+(function(){
+  var LABELS = { en:["Light","Dark","Auto"], fr:["Clair","Sombre","Auto"], ar:["فاتح","داكن","تلقائي"] };
+  var THEME_LABEL = { en:"Theme", fr:"Thème", ar:"المظهر" };
+  var root = document.documentElement;
+  function store(k, v){ try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e){} }
+  function load(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function setLang(l, keepHash){
+    if (!LABELS[l]) l = "en";
+    document.querySelectorAll(".wrap[data-lang]").forEach(function(w){ w.hidden = w.getAttribute("data-lang") !== l; });
+    root.lang = l; root.dir = l === "ar" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-lang]").forEach(function(b){ if (b.tagName === "BUTTON") b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === l)); });
+    var t = document.querySelectorAll("#themeSeg button");
+    LABELS[l].forEach(function(txt, i){ t[i].textContent = txt; t[i].lang = l; });
+    document.getElementById("themeSeg").setAttribute("aria-label", THEME_LABEL[l]);
+    store("ap-lang", l);
+    if (!keepHash && location.hash !== "#" + l) history.replaceState(null, "", "#" + l);
+  }
+  function setTheme(t){
+    if (t === "light" || t === "dark") root.setAttribute("data-theme", t); else root.removeAttribute("data-theme");
+    document.querySelectorAll("#themeSeg button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-theme-set") === (t || "auto"))); });
+    store("ap-theme", t === "auto" ? null : t);
+  }
+  document.querySelectorAll("button[data-lang]").forEach(function(b){ b.addEventListener("click", function(){ setLang(b.getAttribute("data-lang")); }); });
+  document.querySelectorAll("#themeSeg button").forEach(function(b){ b.addEventListener("click", function(){ setTheme(b.getAttribute("data-theme-set")); }); });
+  var h = (location.hash || "").slice(1), fromHash = (h.match(/^(en|fr|ar)/) || [])[1];
+  setLang(fromHash || load("ap-lang") || "en", !!fromHash);
+  setTheme(load("ap-theme") || "auto");
+})();
+</script>

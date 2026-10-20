@@ -1,0 +1,285 @@
+<title>ArchPresent Build Log</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f3f4f2; --surface: #ffffff; --fg: #15181b; --muted: #5b646b; --line: #d6dadc;
+  --accent: #24559e; --ok: #2e7d4f; --warn: #a9680f; --risk: #b3342b;
+  --warn-bg: #f7ecd9; --accent-bg: #e4ecf7; --ok-bg: #e0efe6; --risk-bg: #f6e2df; --later-bg: #ebedee;
+  --head: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --ok-bg: #163023; --risk-bg: #321a18; --later-bg: #22272b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --fg: #e8ebed; --muted: #98a2aa; --line: #2b3238;
+  --accent: #7fa9e8; --ok: #5cbf86; --warn: #e0a44a; --risk: #e5786f;
+  --warn-bg: #2b2415; --accent-bg: #1a2535; --ok-bg: #163023; --risk-bg: #321a18; --later-bg: #22272b; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+* { box-sizing: border-box; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 0 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 10px 0; font-family: var(--mono); font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.bar b { color: var(--fg); font-weight: 600; }
+.bar a { color: var(--accent); }
+.mast { padding: 32px 0 20px; border-bottom: 2px solid var(--fg); }
+.mast h1 { font-family: var(--head); font-weight: 700; font-size: clamp(44px, 9vw, 84px); line-height: .95; letter-spacing: .01em; text-transform: uppercase; margin: 0 0 6px; }
+.mast .doc { font-family: var(--head); font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.stats li { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: var(--surface); padding: 4px 10px; border-radius: 3px; }
+.stats b { font-weight: 600; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 14px 0; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); border-bottom: 1px solid var(--line); z-index: 2; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 3px; background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.sep { flex: 1 1 20px; }
+details.legend, details.add { margin: 12px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; }
+details summary { cursor: pointer; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.legend dl { margin: 10px 0 0; display: grid; gap: 6px; }
+.legend dt { font-weight: 600; font-size: 14px; }
+.legend dd { margin: 0 0 4px; color: var(--muted); font-size: 14px; max-width: 80ch; }
+form.addform { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 12px; }
+form.addform .wide { grid-column: 1 / -1; }
+input, select, textarea, button.btn { font-family: var(--body); font-size: 14px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--fg); min-width: 0; }
+label { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: grid; gap: 4px; }
+button.btn { cursor: pointer; font-weight: 600; background: var(--fg); color: var(--bg); border-color: var(--fg); }
+button.btn.ghost { background: var(--surface); color: var(--fg); border-color: var(--line); font-weight: 500; }
+button:disabled { opacity: .5; cursor: default; }
+h2.group { font-family: var(--head); font-weight: 600; font-size: 26px; text-transform: uppercase; letter-spacing: .05em; margin: 26px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+h2.group small { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0; margin-left: 10px; }
+.task { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; scroll-margin-top: 90px; min-width: 0; }
+.task:target { outline: 2px solid var(--accent); }
+.task header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.task h3 { margin: 0; font-size: 16px; font-weight: 600; flex: 1 1 260px; min-width: 0; }
+.task.done h3, .task.rejected h3 { color: var(--muted); }
+.id { font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+a.id:hover { text-decoration: underline; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.pill.todo { background: var(--accent-bg); color: var(--accent); }
+.pill.done { background: var(--ok-bg); color: var(--ok); }
+.pill.postponed { background: var(--warn-bg); color: var(--warn); }
+.pill.rejected { background: var(--risk-bg); color: var(--risk); }
+.pill.Critical { background: var(--risk-bg); color: var(--risk); }
+.pill.High { background: var(--warn-bg); color: var(--warn); }
+.pill.Medium { background: var(--accent-bg); color: var(--accent); }
+.pill.Low { background: var(--later-bg); color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.note { margin: 6px 0 0; font-size: 14px; color: var(--muted); max-width: 80ch; }
+.refs { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; }
+.edit { margin-top: 8px; }
+.edit form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
+.edit .wide { grid-column: 1 / -1; }
+.hint { font-size: 13px; color: var(--muted); grid-column: 1 / -1; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 13px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 9px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+.empty { color: var(--muted); padding: 24px 0; max-width: 62ch; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<div class="wrap">
+  <div class="bar"><b>Build Log</b><a href="https://claude.ai/artifact/8rwr77T3tnP9CbyG6n4ffi" target="_blank" rel="noopener">Plan</a><a href="https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH" target="_blank" rel="noopener">Blueprint</a><a href="https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P" target="_blank" rel="noopener">History</a><a href="https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub" target="_blank" rel="noopener">Style Ledger</a></div>
+  <div class="mast">
+    <h1>ArchPresent</h1>
+    <p class="doc">Build Log</p>
+    <ul class="stats" id="stats"></ul>
+  </div>
+  <details class="legend"><summary>What the ratings mean</summary>
+    <dl>
+      <dt>Importance</dt>
+      <dd><b>Critical:</b> money, balances or the clean image can be wrong, or the platform cannot be used. <b>High:</b> blocks other tasks, or a launch requirement with a risk to data, money or the clean image. <b>Medium:</b> required for launch, but nothing else waits on it. <b>Low:</b> nice to have, or only needed after launch.</dd>
+      <dt>Time</dt>
+      <dd>Rough working time for one person, including tests and a check on screen: up to 1 day, 2 to 3 days, about 1 week, 2 weeks or more.</dd>
+      <dt>Kind</dt>
+      <dd><b>Correction:</b> something wrong or misleading today, done first. <b>Improvement:</b> everyone gets it. <b>Optional feature:</b> some buyers want it. <b>UI polish:</b> how it looks and feels.</dd>
+      <dt>Order</dt>
+      <dd>Within one importance level: corrections first, then tasks that unblock others, then shorter before longer. A rating is never changed silently. If it changes, the note says why. Marking a task done comes with a History entry, which the note links.</dd>
+    </dl>
+  </details>
+  <details class="add" id="addBox" hidden><summary>Add a task</summary>
+    <form class="addform" id="addForm">
+      <label class="wide">Title<input id="aTitle" required maxlength="140" placeholder="Short, imperative"></label>
+      <label>Area<select id="aSection"></select></label>
+      <label>Kind<select id="aKind"></select></label>
+      <label>Importance<select id="aImp"></select></label>
+      <label>Time<select id="aEst"></select></label>
+      <div class="wide"><button class="btn" type="submit" id="aBtn">Add task</button> <span id="aMsg" class="hint"></span></div>
+    </form>
+  </details>
+  <div class="toolbar">
+    <div class="chips" id="statusChips" role="group" aria-label="Filter by status"></div>
+    <span class="sep"></span>
+    <div class="chips" id="viewChips" role="group" aria-label="View"></div>
+  </div>
+  <div id="list"><p class="empty">Loading tasks.</p></div>
+</div>
+<script>
+(function () {
+  var PLAN = "https://claude.ai/artifact/8rwr77T3tnP9CbyG6n4ffi";
+  var BP = "https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH";
+  var HIST = "https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P";
+  var STATUS = [["all", "All"], ["todo", "Open"], ["postponed", "Postponed"], ["rejected", "Rejected"], ["done", "Done"]];
+  var VIEWS = [["kind", "By kind"], ["section", "By area"], ["table", "Table"]];
+  var KINDS = ["Correction", "Improvement", "Optional feature", "UI polish"];
+  var IMPS = ["Critical", "High", "Medium", "Low"];
+  var ESTS = ["≤1 day", "2–3 days", "~1 week", "2+ weeks"];
+  var SECTIONS = ["Platform & Hosting", "Accounts", "Converter & Queue", "Editor", "Export", "Points & Purchases", "Website", "Admin Panel", "Docs & Process"];
+  var STATUS_LABEL = { todo: "Open", postponed: "Postponed", rejected: "Rejected", done: "Done" };
+  var tasks = [], db = null, canWrite = false, busy = {};
+  var state = { status: "todo", view: "kind" };
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function arr(v) { return Array.isArray(v) ? v : (v ? [v] : []); }
+  function num(ref) { var m = /(\d+)$/.exec(ref || ""); return m ? parseInt(m[1], 10) : 0; }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function opts(list, cur) { return list.map(function (x) { return '<option' + (x === cur ? " selected" : "") + '>' + esc(x) + '</option>'; }).join(""); }
+
+  function unblocks() {
+    var c = {};
+    tasks.forEach(function (t) { arr(t.depends).forEach(function (d) { c[d] = (c[d] || 0) + 1; }); });
+    return c;
+  }
+  function rank(list) {
+    var ub = unblocks();
+    return list.slice().sort(function (a, b) {
+      var ia = IMPS.indexOf(a.importance), ib = IMPS.indexOf(b.importance);
+      if (ia !== ib) return (ia < 0 ? 9 : ia) - (ib < 0 ? 9 : ib);
+      var ca = a.kind === "Correction" ? 0 : 1, cb = b.kind === "Correction" ? 0 : 1;
+      if (ca !== cb) return ca - cb;
+      var ua = ub[a.ref] || 0, uc = ub[b.ref] || 0;
+      if (ua !== uc) return uc - ua;
+      var ea = ESTS.indexOf(a.estimate), eb = ESTS.indexOf(b.estimate);
+      if (ea !== eb) return ea - eb;
+      return num(a.ref) - num(b.ref);
+    });
+  }
+  function refLink(x) {
+    if (/^P-/.test(x)) return '<a class="id" href="' + PLAN + '" target="_blank" rel="noopener">' + esc(x) + '</a>';
+    if (/^B-/.test(x)) return '<a class="id" href="' + BP + '#' + esc(x) + '" target="_blank" rel="noopener">' + esc(x) + '</a>';
+    if (/^H-/.test(x)) return '<a class="id" href="' + HIST + '#' + esc(x) + '" target="_blank" rel="noopener">' + esc(x) + '</a>';
+    if (/^T-/.test(x)) return '<a class="id" href="#' + esc(x) + '">' + esc(x) + '</a>';
+    return '<span class="id">' + esc(x) + '</span>';
+  }
+  function taskHtml(t) {
+    var refs = arr(t.blueprint).concat(arr(t.plan));
+    var dep = arr(t.depends);
+    var edit = "";
+    if (canWrite) {
+      edit = '<details class="edit"><summary>Edit</summary><form data-ref="' + esc(t.ref) + '">' +
+        '<label>Status<select name="status">' + Object.keys(STATUS_LABEL).map(function (s) { return '<option value="' + s + '"' + (t.status === s ? " selected" : "") + '>' + STATUS_LABEL[s] + '</option>'; }).join("") + '</select></label>' +
+        '<label>Importance<select name="importance">' + opts(IMPS, t.importance) + '</select></label>' +
+        '<label>Time<select name="estimate">' + opts(ESTS, t.estimate) + '</select></label>' +
+        '<label class="wide">Note<input name="note" maxlength="300" value="' + esc(t.note) + '"></label>' +
+        '<p class="hint">Marking a task done comes with a History entry. Put its ID in the note. If you change a rating, say why in the note.</p>' +
+        '<div class="wide"><button class="btn" type="submit"' + (busy[t.ref] ? " disabled" : "") + '>Save</button></div></form></details>';
+    }
+    return '<article class="task ' + esc(t.status) + '" id="' + esc(t.ref) + '"><header>' +
+      '<a class="id" href="#' + esc(t.ref) + '">' + esc(t.ref) + '</a>' +
+      '<span class="pill ' + esc(t.status) + '">' + esc(STATUS_LABEL[t.status] || t.status) + '</span>' +
+      '<span class="pill ' + esc(t.importance) + '">' + esc(t.importance) + '</span>' +
+      '<h3>' + esc(t.title) + '</h3></header>' +
+      '<div class="meta"><span>' + esc(t.kind) + '</span><span>' + esc(t.section) + '</span><span>' + esc(t.estimate) + '</span></div>' +
+      (t.note ? '<p class="note">' + esc(t.note) + '</p>' : "") +
+      ((refs.length || dep.length) ? '<div class="refs">' + refs.map(refLink).join("") + (dep.length ? '<span class="meta">waits on</span>' + dep.map(refLink).join("") : "") + '</div>' : "") +
+      edit + '</article>';
+  }
+  function visible() { return tasks.filter(function (t) { return state.status === "all" || t.status === state.status; }); }
+  function grouped(list, key, order) {
+    var keys = order.slice();
+    list.forEach(function (t) { if (keys.indexOf(t[key]) < 0) keys.push(t[key]); });
+    return keys.map(function (k) { return [k, rank(list.filter(function (t) { return t[key] === k; }))]; }).filter(function (g) { return g[1].length; });
+  }
+  function render() {
+    var list = $("list");
+    renderStats(); renderChips();
+    if (!tasks.length) { list.innerHTML = '<p class="empty">No tasks yet. Add the first one with the form above, or ask Claude to plan the work.</p>'; return; }
+    var shown = visible();
+    if (!shown.length) { list.innerHTML = '<p class="empty">No tasks with this status.</p>'; return; }
+    var html = "";
+    if (state.view === "table") {
+      var ub = unblocks();
+      html = '<div class="tablewrap"><table><thead><tr><th>Ref</th><th>Title</th><th>Status</th><th>Importance</th><th>Time</th><th>Kind</th><th>Area</th><th>Blueprint</th><th>Plan</th><th>Waits on</th><th>Note</th></tr></thead><tbody>' +
+        rank(shown).map(function (t) { return '<tr><td><a class="id" href="#' + esc(t.ref) + '">' + esc(t.ref) + '</a></td><td>' + esc(t.title) + '</td><td>' + esc(STATUS_LABEL[t.status]) + '</td><td>' + esc(t.importance) + '</td><td>' + esc(t.estimate) + '</td><td>' + esc(t.kind) + '</td><td>' + esc(t.section) + '</td><td>' + arr(t.blueprint).map(refLink).join(" ") + '</td><td>' + arr(t.plan).map(refLink).join(" ") + '</td><td>' + arr(t.depends).map(refLink).join(" ") + '</td><td>' + esc(t.note) + '</td></tr>'; }).join("") +
+        '</tbody></table></div>';
+    } else {
+      var key = state.view === "kind" ? "kind" : "section";
+      grouped(shown, key, state.view === "kind" ? KINDS : SECTIONS).forEach(function (g) {
+        html += '<h2 class="group">' + esc(g[0]) + '<small>' + g[1].length + ' tasks</small></h2>' + g[1].map(taskHtml).join("");
+      });
+    }
+    var open = []; var ds = list.querySelectorAll("details[open]");
+    ds.forEach(function (d) { var a = d.closest("article"); if (a) open.push(a.id); });
+    list.innerHTML = html;
+    open.forEach(function (id) { var d = document.querySelector("#" + id + " details.edit"); if (d) d.open = true; });
+    if (location.hash.length > 1) { var t = document.getElementById(location.hash.slice(1)); if (t && !t.dataset.seen) { t.dataset.seen = "1"; t.scrollIntoView(); } }
+  }
+  function renderStats() {
+    var c = { todo: 0, postponed: 0, rejected: 0, done: 0 };
+    tasks.forEach(function (t) { if (c[t.status] != null) c[t.status]++; });
+    $("stats").innerHTML = '<li><b>' + tasks.length + '</b> tasks</li>' + Object.keys(c).map(function (s) { return '<li><b>' + c[s] + '</b> ' + STATUS_LABEL[s].toLowerCase() + '</li>'; }).join("");
+  }
+  function renderChips() {
+    $("statusChips").innerHTML = STATUS.map(function (s) { return '<button type="button" class="chip" data-s="' + s[0] + '" aria-pressed="' + (state.status === s[0]) + '">' + s[1] + '</button>'; }).join("");
+    $("viewChips").innerHTML = VIEWS.map(function (v) { return '<button type="button" class="chip" data-v="' + v[0] + '" aria-pressed="' + (state.view === v[0]) + '">' + v[1] + '</button>'; }).join("");
+  }
+  $("statusChips").addEventListener("click", function (e) { var b = e.target.closest("button[data-s]"); if (b) { state.status = b.getAttribute("data-s"); render(); } });
+  $("viewChips").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) { state.view = b.getAttribute("data-v"); render(); } });
+
+  $("aSection").innerHTML = opts(SECTIONS); $("aKind").innerHTML = opts(KINDS, "Improvement");
+  $("aImp").innerHTML = opts(IMPS, "Medium"); $("aEst").innerHTML = opts(ESTS, "2–3 days");
+
+  $("list").addEventListener("submit", function (e) {
+    var f = e.target.closest("form[data-ref]"); if (!f) return;
+    e.preventDefault();
+    var ref = f.getAttribute("data-ref"); if (!db || busy[ref]) return;
+    busy[ref] = true; var btn = f.querySelector("button"); btn.disabled = true;
+    db.doc("tasks/" + ref).update({
+      status: f.status.value, importance: f.importance.value, estimate: f.estimate.value,
+      note: f.note.value.trim().slice(0, 300), updated: today()
+    }).then(function () { busy[ref] = false; }, function () { busy[ref] = false; btn.disabled = false; btn.textContent = "Could not save"; });
+  });
+  $("addForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!db || !canWrite) return;
+    var title = $("aTitle").value.trim(); if (!title) return;
+    var btn = $("aBtn"); btn.disabled = true; $("aMsg").textContent = "";
+    var n = tasks.reduce(function (m, t) { return Math.max(m, num(t.ref)); }, 0) + 1;
+    function tryWrite(k) {
+      var ref = "T-" + String(k).padStart(3, "0");
+      return db.doc("tasks/" + ref).get().then(function (s) {
+        if (s.exists) return tryWrite(k + 1);
+        var d = today();
+        return db.doc("tasks/" + ref).set({ ref: ref, title: title, note: "", status: "todo", section: $("aSection").value, kind: $("aKind").value, importance: $("aImp").value, estimate: $("aEst").value, blueprint: [], plan: [], depends: [], created: d, updated: d }).then(function () { return ref; });
+      });
+    }
+    tryWrite(n).then(function (ref) { $("addForm").reset(); $("aKind").value = "Improvement"; $("aImp").value = "Medium"; $("aEst").value = "2–3 days"; $("aMsg").textContent = "Added " + ref + "."; btn.disabled = false; },
+      function () { $("aMsg").textContent = "Could not add the task."; btn.disabled = false; });
+  });
+
+  renderChips();
+  function start() {
+    db.collection("tasks").limit(1000).onSnapshot(function (snap) {
+      tasks = snap.docs.map(function (d) { var o = d.data() || {}; o.ref = o.ref || d.id; return o; });
+      render();
+    }, function () { $("list").innerHTML = '<p class="empty">Tasks could not be loaded. Reload the page, or open it while signed in to claude.ai.</p>'; });
+  }
+  if (window.claude && window.claude.use) {
+    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function (r) {
+      db = r[0];
+      if (!db) { $("list").innerHTML = '<p class="empty">Tasks load when this page is opened signed in to claude.ai.</p>'; return; }
+      var u = r[1];
+      var can = u && u.can ? u.can("data.write") : null;
+      Promise.resolve(can).then(function (v) {
+        canWrite = v !== false;
+        $("addBox").hidden = !canWrite;
+        start();
+      });
+    }, function () { $("list").innerHTML = '<p class="empty">Tasks could not be loaded.</p>'; });
+  } else {
+    $("list").innerHTML = '<p class="empty">Tasks load when this page is opened in the claude.ai viewer.</p>';
+  }
+})();
+</script>

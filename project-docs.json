@@ -1,0 +1,216 @@
+{
+  "project": "ArchPresent",
+  "platforms": [
+    "web-desktop"
+  ],
+  "docLook": {
+    "from": "ArchPresent Plan (new look, proposed 2026-10-16)",
+    "fonts": {
+      "heading": "Barlow Condensed",
+      "body": "Barlow",
+      "mono": "IBM Plex Mono"
+    }
+  },
+  "tokenSource": [
+    "web/app/tokens.css"
+  ],
+  "artifacts": {
+    "plan": "https://claude.ai/artifact/8rwr77T3tnP9CbyG6n4ffi",
+    "buildLog": "https://claude.ai/artifact/JkPiusgky9b5qAf11fUDhQ",
+    "blueprint": "https://claude.ai/artifact/HVSquyi3zvnMXJf9nqYHNH",
+    "history": "https://claude.ai/artifact/KgNAte5rtA5FdbvPUvpa4P",
+    "styleLedger": "https://claude.ai/artifact/2ZC6U4Rv7i9ZktKeunm1ub",
+    "playground": "https://claude.ai/artifact/KPiqpax18w4GNuxQwAWsEV",
+    "backendModel": "https://claude.ai/artifact/AHHAtMv7HYU15VQqh1RyLb",
+    "builds": "https://claude.ai/artifact/1vmKxvZnNeruCNu3G85hDv"
+  },
+  "fields": {
+    "taskNumber": "ref"
+  },
+  "lastIds": {
+    "P": "P-5.27",
+    "B": "B-24",
+    "T": "T-058",
+    "H": "H-2026-10-21-2"
+  },
+  "buildsStatus": "agreed, partly built",
+  "variants": [
+    {
+      "id": "V-release",
+      "suffix": "",
+      "host": "the real site",
+      "data": "real database and storage",
+      "badge": "none",
+      "purpose": "What buyers and the client use."
+    },
+    {
+      "id": "V-staging",
+      "suffix": "-staging",
+      "host": "a separate staging site",
+      "data": "its own test database and storage, loads dataset packs",
+      "badge": "warn",
+      "purpose": "Daily development and testing. Has the debug menu with the dataset switcher and logs."
+    },
+    {
+      "id": "V-exp",
+      "suffix": "-exp",
+      "host": "a second staging site, or the same code on another port locally",
+      "data": "its own test database and storage, loads dataset packs",
+      "badge": "accent",
+      "purpose": "Experimental flags on, to try a new feature next to the staging build."
+    },
+    {
+      "id": "V-demo",
+      "suffix": "-demo",
+      "host": "a third site",
+      "data": "the demo pack only, reset on request",
+      "badge": "go",
+      "purpose": "To show the platform to the client and to buyers, with polished data and no debug menu."
+    }
+  ],
+  "datasets": [
+    {
+      "id": "D-empty",
+      "path": "seed/D-empty",
+      "describes": "First run: one admin, no models, no bundles. Tests the empty states and the first upload.",
+      "built": false
+    },
+    {
+      "id": "D-demo",
+      "path": "seed/D-demo",
+      "describes": "Two published models (a 3 page student model and a 7 page architect model) built from the converted template, three buyers (one with 20000 points, one with 0, one with an exact balance), four top-up bundles.",
+      "built": false
+    },
+    {
+      "id": "D-small",
+      "path": "seed/D-small",
+      "describes": "A realistic first month: 5 models, 20 buyers, 30 purchases, a few drafts, 2 queued conversions.",
+      "built": false
+    },
+    {
+      "id": "D-large",
+      "path": "seed/D-large",
+      "describes": "The biggest expected load: 200 models of 7 pages, 2000 buyers, 50000 ledger rows, 5000 drafts. For speed, gallery, admin list and balance checks.",
+      "built": false
+    },
+    {
+      "id": "D-edge",
+      "path": "seed/D-edge",
+      "describes": "Awkward cases: Arabic names and right-to-left layout, very long titles, a buyer at exactly the price, an expired draft, a failed conversion, 20 queued conversions (expected finish 5 hours 15 minutes), photos far too small to print, an unpublished model with an unpublished page.",
+      "built": false
+    },
+    {
+      "id": "D-photos",
+      "path": "seed/D-photos",
+      "describes": "A set of sample photos at known sizes (small, medium, A1-sharp, huge) used by the other packs and for the print-quality warning and export tests.",
+      "built": true
+    }
+  ],
+  "flags": [
+    {
+      "id": "F-preview-assets",
+      "status": "experimental",
+      "on": [
+        "V-exp"
+      ],
+      "blueprint": "B-09",
+      "task": "T-017",
+      "description": "The editor loads the small preview images instead of the full-size files."
+    },
+    {
+      "id": "F-server-export",
+      "status": "experimental",
+      "on": [
+        "V-exp"
+      ],
+      "blueprint": "B-16",
+      "task": "T-023",
+      "description": "A paid export is rendered on the server and returned as one zip. Off means the browser export of one page."
+    },
+    {
+      "id": "F-draft-sync",
+      "status": "experimental",
+      "on": [
+        "V-exp"
+      ],
+      "blueprint": "B-17",
+      "task": "T-022",
+      "description": "Drafts autosave to the browser and sync to the server."
+    },
+    {
+      "id": "F-print-quality",
+      "status": "on in release",
+      "on": [
+        "V-release",
+        "V-staging",
+        "V-exp",
+        "V-demo"
+      ],
+      "blueprint": "B-11",
+      "task": "T-019",
+      "description": "Each photo shows how sharp it will print. Built and on everywhere."
+    },
+    {
+      "id": "F-rtl-ar",
+      "status": "experimental",
+      "on": [
+        "V-exp"
+      ],
+      "blueprint": "B-22",
+      "task": "T-032",
+      "description": "Arabic interface with the layout mirrored right to left."
+    },
+    {
+      "id": "F-queue-estimate",
+      "status": "experimental",
+      "on": [
+        "V-exp"
+      ],
+      "blueprint": "B-07",
+      "task": "T-013",
+      "description": "An uploader sees the expected finish time of the conversion queue."
+    },
+    {
+      "id": "F-designer-accounts",
+      "status": "experimental",
+      "on": [],
+      "blueprint": "B-19",
+      "task": "T-038",
+      "description": "Designer applications and accounts. Postponed past the first launch, so off everywhere."
+    }
+  ],
+  "buildsRecipes": [
+    {
+      "title": "Compare the editor with full-size and preview images on a heavy load",
+      "steps": [
+        "Start V-staging and V-exp side by side, each with its own port or site.",
+        "Load D-large into both.",
+        "Turn F-preview-assets on in V-exp only.",
+        "Open the same model in both and time the first load and a few edits."
+      ]
+    },
+    {
+      "title": "Check a buyer with too few points",
+      "steps": [
+        "Load D-demo into V-staging.",
+        "Sign in as the buyer with 0 points.",
+        "Press Buy on the architect model and confirm the bundles are shown and nothing is charged."
+      ]
+    },
+    {
+      "title": "See the Arabic layout on awkward data",
+      "steps": [
+        "Load D-edge into V-exp.",
+        "Turn F-rtl-ar on and switch the language to Arabic.",
+        "Open the models with Arabic names and very long titles."
+      ]
+    },
+    {
+      "title": "Show the client",
+      "steps": [
+        "Reset V-demo to D-demo.",
+        "Open it. There is no debug menu and no badge."
+      ]
+    }
+  ]
+}

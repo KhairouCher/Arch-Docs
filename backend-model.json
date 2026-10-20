@@ -1,0 +1,939 @@
+{
+  "intro": "The classes the backend needs, with their attributes and rules, built from the Plan, the Blueprint and the schema draft (web/db/schema.sql, tested in PGlite). The questions are answered and applied (see Answered). One remains, about the email sender address, and waits on the domain name from Said.",
+  "classes": [
+    {
+      "name": "User",
+      "purpose": "Anyone with an account: a buyer, an admin, or later a designer.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          "Made by our own server when the account is created."
+        ],
+        [
+          "email",
+          "string",
+          "Unique."
+        ],
+        [
+          "displayName",
+          "string",
+          "Shown in the dashboard and on receipts."
+        ],
+        [
+          "role",
+          "Role",
+          "buyer, admin or designer. One class with a role, not three classes."
+        ],
+        [
+          "language",
+          "Language",
+          "fr, ar or en. Decides the interface language and the layout direction. New accounts start in French."
+        ],
+        [
+          "passwordHash",
+          "string",
+          "A slow hash of the password, never the password. Empty for Google-only accounts."
+        ],
+        [
+          "googleSubject",
+          "string",
+          "Google's id for the person, when they sign in with Google. Unique."
+        ],
+        [
+          "emailVerifiedAt",
+          "datetime",
+          "When the address was confirmed by a link."
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ],
+        [
+          "deletedAt",
+          "datetime",
+          "Set when the person deletes their account. Empty otherwise."
+        ]
+      ],
+      "methods": [
+        "balance() int",
+        "deleteAccount()"
+      ],
+      "rules": [
+        "Sign in is email and password, or Google, or both on one account. Our own server holds the accounts.",
+        "The balance is never stored. It is the sum of the user's ledger entries.",
+        "Only an admin can change another user's role.",
+        "A bureau, a student and an architect are all just users. The audience only shows in which models they buy, never in the account.",
+        "Deleting an account removes the user's drafts, photos, purchases, exports (with their zips), receipts and sign-in links. The user row stays, emptied of name, email and sign-in details, so the append-only ledger keeps its reference. This is the agreed rule.",
+        "A buyer must confirm their email address by link before buying. Browsing and editing do not need it.",
+        "At most 1 GB of draft photos per user at first, counted across all their drafts. Raise the limit if real use needs it."
+      ],
+      "plan": [
+        "P-5.1",
+        "P-5.15"
+      ]
+    },
+    {
+      "name": "AuthToken",
+      "purpose": "A single-use link sent by email to confirm an address or reset a password.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          ""
+        ],
+        [
+          "purpose",
+          "TokenPurpose",
+          "verify_email or reset_password."
+        ],
+        [
+          "tokenHash",
+          "string",
+          "Only a hash is stored, never the token that was emailed."
+        ],
+        [
+          "expiresAt",
+          "datetime",
+          "Short life, for example one hour."
+        ],
+        [
+          "usedAt",
+          "datetime",
+          "Set when used. A used or expired token does nothing."
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Added by me because password sign-in needs a way to reset a forgotten password.",
+        "Needs the email service (Plan Open 9, T-030)."
+      ],
+      "plan": [
+        "P-5.1"
+      ]
+    },
+    {
+      "name": "Template",
+      "purpose": "One page design, produced by the converter from a PSD.",
+      "attrs": [
+        [
+          "id",
+          "string",
+          "Short name, used in storage paths."
+        ],
+        [
+          "sourceFile",
+          "string",
+          "The PSD it came from."
+        ],
+        [
+          "canvasWidth",
+          "int",
+          "Pixels, for example 9933."
+        ],
+        [
+          "canvasHeight",
+          "int",
+          "Pixels, for example 7016."
+        ],
+        [
+          "schemaVersion",
+          "int",
+          "Version of the template.json format."
+        ],
+        [
+          "status",
+          "TemplateStatus",
+          "queued, converting, in_review, published, rejected or failed."
+        ],
+        [
+          "fullPrefix",
+          "string",
+          "Folder of the full-size files in the private store. Never sent to a browser."
+        ],
+        [
+          "previewPrefix",
+          "string",
+          "Folder of the small preview files in the public store."
+        ],
+        [
+          "uploadedBy",
+          "User",
+          "The admin (later a designer) who uploaded it."
+        ],
+        [
+          "reviewedBy",
+          "User",
+          "Who approved or rejected it."
+        ],
+        [
+          "reviewedAt",
+          "datetime",
+          ""
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "The zones (photo, text, plan, model, logo) and the layer list are stored in template.json in storage, not as database rows.",
+        "A template reaches a buyer only when its status is published.",
+        "A template reaches a buyer only after Said's review, except fast-path output: a template Khairou converted on his own PC and uploaded as an admin may be published without that review."
+      ],
+      "plan": [
+        "P-5.12",
+        "P-5.13"
+      ]
+    },
+    {
+      "name": "Model",
+      "purpose": "A presentation made of several pages. What a buyer chooses and buys.",
+      "attrs": [
+        [
+          "id",
+          "string",
+          ""
+        ],
+        [
+          "name",
+          "string",
+          "Shown in the large editor title."
+        ],
+        [
+          "tier",
+          "Tier",
+          "student, architect or bureau."
+        ],
+        [
+          "pricePoints",
+          "int",
+          "Set by the client, in points."
+        ],
+        [
+          "published",
+          "boolean",
+          "Visible to buyers."
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [
+        "publish()"
+      ],
+      "rules": [
+        "Can be published only when every page's template is published."
+      ],
+      "plan": [
+        "P-5.14"
+      ]
+    },
+    {
+      "name": "ModelPage",
+      "purpose": "One page of a model: which template, in which position.",
+      "attrs": [
+        [
+          "model",
+          "Model",
+          ""
+        ],
+        [
+          "position",
+          "int",
+          "1, 2, 3 and so on. Drives the left and right arrows."
+        ],
+        [
+          "name",
+          "string",
+          "Shown in brackets after the model name."
+        ],
+        [
+          "template",
+          "Template",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "The same template may be used by more than one model."
+      ],
+      "plan": [
+        "P-5.3"
+      ]
+    },
+    {
+      "name": "Draft",
+      "purpose": "A buyer's work in progress on a model. Saved automatically.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          "Owner."
+        ],
+        [
+          "model",
+          "Model",
+          ""
+        ],
+        [
+          "title",
+          "string",
+          "The buyer's own name for the project."
+        ],
+        [
+          "state",
+          "json",
+          "Edits only: text (content, font, size, color, alignment, position, box width), photo choices (photo, fit or fill, offset), layer order and the open page."
+        ],
+        [
+          "savedAt",
+          "datetime",
+          "Updated on every save."
+        ],
+        [
+          "expiresAt",
+          "datetime",
+          "Always one month after savedAt."
+        ]
+      ],
+      "methods": [
+        "save(state)"
+      ],
+      "rules": [
+        "Deleted for good one month after the last save, together with its photos. The buyer is told when saving.",
+        "The editor saves to the browser first and syncs when the connection returns."
+      ],
+      "plan": [
+        "P-4.2",
+        "P-5.6"
+      ]
+    },
+    {
+      "name": "Photo",
+      "purpose": "A photo a buyer uploaded into a draft.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "draft",
+          "Draft",
+          ""
+        ],
+        [
+          "storagePath",
+          "string",
+          "Private store."
+        ],
+        [
+          "width",
+          "int",
+          "Pixels. Used for the print-quality warning."
+        ],
+        [
+          "height",
+          "int",
+          "Pixels."
+        ],
+        [
+          "sizeBytes",
+          "int",
+          "For storage limits and cost."
+        ],
+        [
+          "uploadedAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Deleted with its draft.",
+        "The sum of one user's photo sizes may not pass 1 GB at first. A photo that would pass it is refused."
+      ],
+      "plan": [
+        "P-5.4",
+        "P-5.5"
+      ]
+    },
+    {
+      "name": "Bundle",
+      "purpose": "A top-up the buyer can pay Said for: a price in DA that gives points.",
+      "attrs": [
+        [
+          "id",
+          "int",
+          ""
+        ],
+        [
+          "name",
+          "string",
+          "For example one tier 1 template, or 20 tier 3 models."
+        ],
+        [
+          "priceDa",
+          "decimal",
+          "Shown with .00."
+        ],
+        [
+          "points",
+          "int",
+          "Bigger bundles give more points per DA."
+        ],
+        [
+          "active",
+          "boolean",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Set only by the client."
+      ],
+      "plan": [
+        "P-5.26"
+      ]
+    },
+    {
+      "name": "LedgerEntry",
+      "purpose": "One change to a user's points. The record of every top-up, purchase and adjustment.",
+      "attrs": [
+        [
+          "id",
+          "int",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          "Whose balance changes."
+        ],
+        [
+          "kind",
+          "LedgerKind",
+          "topup, purchase or adjustment."
+        ],
+        [
+          "amount",
+          "int",
+          "Positive adds points, negative spends them."
+        ],
+        [
+          "reason",
+          "string",
+          "Required. Why the entry exists, in plain words."
+        ],
+        [
+          "paymentMethod",
+          "PaymentMethod",
+          "For a top-up: how it was paid. Said picks it by hand at first; the payment service sets it when automatic payment exists."
+        ],
+        [
+          "paymentReference",
+          "string",
+          "For a top-up: a receipt or transfer number, when there is one."
+        ],
+        [
+          "bundle",
+          "Bundle",
+          "For a top-up."
+        ],
+        [
+          "model",
+          "Model",
+          "For a purchase."
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ],
+        [
+          "createdBy",
+          "User",
+          "The admin who recorded it, or the buyer for a purchase. Empty when an online payment creates it automatically."
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Append only: never changed or deleted. A mistake or a refund is a new adjustment entry.",
+        "Only an admin can add a top-up or an adjustment by hand. The balance can never go below zero.",
+        "A purchase checks the balance and writes its entry in one step.",
+        "A top-up always records its payment method. At first Said picks it when he adds the points. Once online payment exists, the payment service writes it and the admin step disappears."
+      ],
+      "plan": [
+        "P-5.25",
+        "P-5.16"
+      ]
+    },
+    {
+      "name": "Purchase",
+      "purpose": "A buyer's ownership of a model, made by spending points.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          ""
+        ],
+        [
+          "model",
+          "Model",
+          ""
+        ],
+        [
+          "pointsSpent",
+          "int",
+          "The price at the time of purchase."
+        ],
+        [
+          "ledgerEntry",
+          "LedgerEntry",
+          "The entry that took the points."
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "One purchase per user and model. Buying twice charges once.",
+        "Buying removes the watermark and unlocks unlimited exports for as long as the account exists.",
+        "Every export is its own Export record, so no counter is needed."
+      ],
+      "plan": [
+        "P-5.8",
+        "P-5.9"
+      ]
+    },
+    {
+      "name": "Export",
+      "purpose": "A finished download: all pages of a model as one zip.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "purchase",
+          "Purchase",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          ""
+        ],
+        [
+          "draft",
+          "Draft",
+          "What was rendered."
+        ],
+        [
+          "status",
+          "ExportStatus",
+          "queued, rendering, ready, failed or expired."
+        ],
+        [
+          "storagePath",
+          "string",
+          "The zip, in the private store."
+        ],
+        [
+          "sizeBytes",
+          "int",
+          "Can reach 400 MB or more."
+        ],
+        [
+          "error",
+          "string",
+          ""
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ],
+        [
+          "finishedAt",
+          "datetime",
+          ""
+        ],
+        [
+          "expiresAt",
+          "datetime",
+          "Seven days after finishing. The zip is then removed and the buyer can render it again."
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Rendered on the server by a worker, one page strip at a time, with a limit on how many run together.",
+        "Exports are unlimited, so zips are kept 7 days and then removed to save storage. A scheduled job marks them expired and deletes the files."
+      ],
+      "plan": [
+        "P-5.10"
+      ]
+    },
+    {
+      "name": "ConversionJob",
+      "purpose": "A PSD waiting to be converted, or being converted, by the cloud converter.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "template",
+          "Template",
+          ""
+        ],
+        [
+          "requestedBy",
+          "User",
+          ""
+        ],
+        [
+          "status",
+          "JobStatus",
+          "queued, running, done or failed."
+        ],
+        [
+          "estimatedSeconds",
+          "int",
+          "About 900 (15 minutes) per model."
+        ],
+        [
+          "queuedAt",
+          "datetime",
+          ""
+        ],
+        [
+          "startedAt",
+          "datetime",
+          ""
+        ],
+        [
+          "finishedAt",
+          "datetime",
+          ""
+        ],
+        [
+          "error",
+          "string",
+          "Includes the layer-name problems the validator found."
+        ]
+      ],
+      "methods": [
+        "expectedFinish() datetime"
+      ],
+      "rules": [
+        "The expected finish is the work already queued plus its own estimate. The uploader sees it.",
+        "The validator runs first and rejects a file with bad layer names."
+      ],
+      "plan": [
+        "P-5.12"
+      ]
+    },
+    {
+      "name": "EmailReceipt",
+      "purpose": "A record of each email the platform sends, for receipts after a top-up or a purchase.",
+      "attrs": [
+        [
+          "id",
+          "uuid",
+          ""
+        ],
+        [
+          "user",
+          "User",
+          "The recipient."
+        ],
+        [
+          "kind",
+          "string",
+          "topup or purchase."
+        ],
+        [
+          "ledgerEntry",
+          "LedgerEntry",
+          "What it is about."
+        ],
+        [
+          "status",
+          "string",
+          "sent or failed."
+        ],
+        [
+          "sentAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "It lets the admin see a receipt that never arrived and resend it."
+      ],
+      "plan": [
+        "P-4.3",
+        "P-5.8"
+      ]
+    },
+    {
+      "name": "AuditEvent",
+      "purpose": "A short log of what admins did: approvals, publishing, role changes.",
+      "attrs": [
+        [
+          "id",
+          "int",
+          ""
+        ],
+        [
+          "actor",
+          "User",
+          ""
+        ],
+        [
+          "action",
+          "string",
+          "For example template_approved, model_published, role_changed."
+        ],
+        [
+          "targetType",
+          "string",
+          ""
+        ],
+        [
+          "targetId",
+          "string",
+          ""
+        ],
+        [
+          "detail",
+          "string",
+          ""
+        ],
+        [
+          "createdAt",
+          "datetime",
+          ""
+        ]
+      ],
+      "methods": [],
+      "rules": [
+        "Append only. The ledger already covers points, this covers everything else an admin changes."
+      ],
+      "plan": [
+        "P-5.13",
+        "P-5.15"
+      ]
+    }
+  ],
+  "relations": [
+    [
+      "User",
+      "1",
+      "*",
+      "Draft",
+      "owns"
+    ],
+    [
+      "User",
+      "1",
+      "*",
+      "LedgerEntry",
+      "has"
+    ],
+    [
+      "User",
+      "1",
+      "*",
+      "Purchase",
+      "makes"
+    ],
+    [
+      "Model",
+      "1",
+      "*",
+      "ModelPage",
+      "has pages"
+    ],
+    [
+      "Template",
+      "1",
+      "*",
+      "ModelPage",
+      "used in"
+    ],
+    [
+      "Model",
+      "1",
+      "*",
+      "Draft",
+      "is worked on in"
+    ],
+    [
+      "Draft",
+      "1",
+      "*",
+      "Photo",
+      "contains"
+    ],
+    [
+      "Model",
+      "1",
+      "*",
+      "Purchase",
+      "bought as"
+    ],
+    [
+      "Purchase",
+      "1",
+      "1",
+      "LedgerEntry",
+      "paid by"
+    ],
+    [
+      "Purchase",
+      "1",
+      "*",
+      "Export",
+      "produces"
+    ],
+    [
+      "Bundle",
+      "1",
+      "*",
+      "LedgerEntry",
+      "tops up"
+    ],
+    [
+      "Template",
+      "1",
+      "*",
+      "ConversionJob",
+      "converted by"
+    ],
+    [
+      "LedgerEntry",
+      "1",
+      "*",
+      "EmailReceipt",
+      "reported by"
+    ],
+    [
+      "User",
+      "1",
+      "*",
+      "AuditEvent",
+      "performs"
+    ],
+    [
+      "User",
+      "1",
+      "*",
+      "AuthToken",
+      "receives"
+    ]
+  ],
+  "enums": [
+    [
+      "Role",
+      "buyer, admin, designer"
+    ],
+    [
+      "Language",
+      "fr, ar, en"
+    ],
+    [
+      "Tier",
+      "student, architect, bureau (the audience a model is made for, not an account type)"
+    ],
+    [
+      "TemplateStatus",
+      "queued, converting, in_review, published, rejected, failed"
+    ],
+    [
+      "LedgerKind",
+      "topup, purchase, adjustment"
+    ],
+    [
+      "ExportStatus",
+      "queued, rendering, ready, failed, expired"
+    ],
+    [
+      "JobStatus",
+      "queued, running, done, failed"
+    ],
+    [
+      "PaymentMethod",
+      "cash, bank_transfer, ccp, baridimob_edahabia, other, online (later)"
+    ],
+    [
+      "TokenPurpose",
+      "verify_email, reset_password"
+    ]
+  ],
+  "choices": [
+    "One User class with a role, not separate Buyer, Admin and Designer classes. The same person can later be both buyer and designer.",
+    "A Template is one page and a Model is a whole presentation, using your words. Tier and price belong to the Model, not the Template.",
+    "Zones (photo, text and plan areas) live inside template.json in storage, not as database rows. The database never needs to search inside them.",
+    "A balance is calculated from the ledger and never stored, so it cannot drift out of step.",
+    "A Photo is its own class, so deleting a draft after a month also removes its photos, and storage per user can be counted.",
+    "A Purchase belongs to a Model, not to each page, and has no export limit.",
+    "Deleting an account empties the user row but keeps it, so the ledger and audit log keep a valid reference. Everything else of theirs is deleted.",
+    "Our own server holds accounts and passwords (no outside sign-in service), plus Google as a second way in. Added an AuthToken class for email confirmation and password reset."
+  ],
+  "later": "Not drawn because they are out of the first 4 months: DesignerApplication (past designs, status), DesignerProfile (commission rate, approved by), PriceProposal (proposed price, accepted or refused), Commission (per sale), and a Subscription if Said wants one.",
+  "questions": [
+    "Which sender address will Resend send from (for example receipts@your-domain)? The domain name will come from Said, so this waits on him."
+  ],
+  "answered": [
+    "A bureau is just a target audience and a user like any other. No Team or Organization class. Tier keeps the name bureau only as the audience a model is made for.",
+    "Exports are unlimited for as long as the account exists, so Purchase has no export limit or counter (this settles Plan Open 5). The cost is storage, handled by removing old zips and rendering again on request.",
+    "EmailReceipt and AuditEvent are kept.",
+    "A top-up records how it was paid as its own fields (method and reference). Said sets it by hand at first and the payment service sets it automatically later.",
+    "Payment methods Said accepts today: cash, bank transfer, CCP and Baridimob or Edahabia. They are the PaymentMethod list, with other, and online added later.",
+    "Export zips are kept for 7 days, then removed. The buyer can render them again.",
+    "When an account is deleted, the points history and receipts are kept without personal details.",
+    "Sign in is email and password plus Google.",
+    "The interface opens in French by default, with Arabic and English one click away.",
+    "A buyer confirms their email address by link before buying. Not before browsing, editing or uploading.",
+    "A template converted on Khairou's PC and uploaded by the fast path goes live without Said's review. Queue templates still need it.",
+    "Draft photos are limited to 1 GB per user at first and revisited if storage grows.",
+    "Resend sends the receipts, confirmations and password resets. The sender address is still to be chosen and needs a domain name.",
+    "Google sign-in is decided later. Email and password come first; the Google developer account owner is not chosen yet.",
+    "Exports of a purchase and the draft photo limit are enforced in the schema: no export counter, and a trigger refuses a photo that would take a user past 1 GB.",
+    "The schema is tested in PGlite (54 checks pass: ledger rules, buying, refunds, receipts, audit log, expiry jobs, photo limit, account deletion). It still needs a run on a real PostgreSQL server, including two simultaneous spends."
+  ]
+}
