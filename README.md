@@ -18,6 +18,7 @@ Edit the sources, never a generated page, then rebuild and publish.
 | History | [`history.html`](history.html) | page template; the entries live in the page's own database |
 | Build Log | [`buildlog.html`](buildlog.html) | page template; the tasks live in the page's own database |
 | Plan PDFs (French, Arabic) | [`plan.html`](plan.html) | `node build-plan-pdf.mjs` |
+| Website design brief (for the designer) | [`design-brief.html`](design-brief.html) and [`design-brief/`](design-brief/) (screenshots) | `node build-design-brief.mjs <outDir> <workDir>` (fills the token table from `tokens.css`, writes a one-file HTML and the PDF) |
 
 History entries and Build Log tasks are rows in the database of their published
 page, not files here. Their last IDs are in `project-docs.json`.
@@ -29,5 +30,6 @@ page, not files here. Their last IDs are in `project-docs.json`.
   [`ArchPresent-Plan-AR.pdf`](ArchPresent-Plan-AR.pdf) were made on 2026-10-17
   and are **out of date**: the Plan has been updated since (Open 5, 6, 8, 9 and
   10). Regenerate them before sending them to the client.
+- [`ArchPresent-Design-Brief.pdf`](ArchPresent-Design-Brief.pdf) is the 2026-10-21 build of the brief. Retake the screenshots and rebuild it when the screens change a lot.
 - Every change to the project lands in the History, and usually in the Build Log
   and the Blueprint too.

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ArchPresent - Website design brief</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@page { size: A4; margin: 16mm 14mm 18mm; @bottom-center { content: counter(page) " / " counter(pages); font-family: "Segoe UI", Arial, sans-serif; font-size: 8pt; color: #5b646b; } }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0 auto; max-width: 900px; padding: 24px 20px 60px; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; line-height: 1.5; color: #15181b; background: #fff; }
+a { color: #24559e; text-decoration: none; }
+code, .mono { font-family: Consolas, "Courier New", monospace; font-size: 9pt; background: #eef1f6; padding: 0 4px; border-radius: 3px; }
+.mast { padding-bottom: 8mm; border-bottom: 1.5pt solid #15181b; margin-bottom: 6mm; }
+.mast h1 { margin: 0; font-size: 32pt; line-height: 1; font-weight: 800; letter-spacing: .01em; text-transform: uppercase; }
+.mast .doc { margin: 1mm 0 5mm; font-size: 14pt; letter-spacing: .1em; text-transform: uppercase; color: #5b646b; }
+.meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm 8mm; margin: 0; }
+.meta dt { font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #5b646b; }
+.meta dd { margin: 0; }
+.pill { display: inline-block; font-size: 7.5pt; letter-spacing: .05em; text-transform: uppercase; padding: .4mm 2.2mm; border-radius: 1mm; background: #f7ecd9; color: #8a5509; }
+.toc { margin: 0 0 6mm; padding: 3mm 4mm; background: #f3f4f2; border: .5pt solid #d6dadc; border-radius: 1.5mm; }
+.toc ol { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 8mm; }
+h2 { margin: 8mm 0 3mm; padding-bottom: 1.5mm; border-bottom: .75pt solid #d6dadc; font-size: 16pt; font-weight: 700; break-after: avoid; }
+h2 .n { font-family: Consolas, monospace; font-size: 9pt; color: #5b646b; margin-right: 3mm; font-weight: 400; }
+h3 { margin: 5mm 0 2mm; font-size: 11.5pt; font-weight: 700; break-after: avoid; }
+p { margin: 0 0 2.4mm; }
+.lead { font-size: 12pt; }
+ul { margin: 0 0 3mm; padding-left: 6mm; } li { margin-bottom: 1.4mm; }
+table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 2mm 0 4mm; }
+th, td { text-align: left; vertical-align: top; padding: 1.8mm 2.6mm; border-bottom: .5pt solid #d6dadc; }
+th { font-size: 7.5pt; letter-spacing: .06em; text-transform: uppercase; color: #5b646b; background: #f3f4f2; font-weight: 600; }
+tr { break-inside: avoid; }
+.sw { display: inline-block; width: 3.2mm; height: 3.2mm; border: .5pt solid #0003; border-radius: .6mm; vertical-align: -0.5mm; margin-right: 1.6mm; }
+figure { margin: 3mm 0 5mm; break-inside: avoid; }
+figure img { width: 100%; border: .5pt solid #d6dadc; border-radius: 1.5mm; display: block; }
+figure figcaption { font-size: 8.5pt; color: #5b646b; margin-top: 1.4mm; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; } .pair figure { margin: 3mm 0; }
+.note { background: #f7ecd9; border-left: 1.2mm solid #a9680f; border-radius: 1mm; padding: 2.4mm 3.5mm; margin: 3mm 0; break-inside: avoid; }
+.ask { background: #e4ecf7; border-left: 1.2mm solid #24559e; border-radius: 1mm; padding: 2.4mm 3.5mm; margin: 3mm 0; break-inside: avoid; }
+.small { font-size: 9pt; color: #5b646b; }
+</style>
+</head>
+<body>
+
+<div class="mast">
+  <h1>ArchPresent</h1>
+  <p class="doc">Website design brief</p>
+  <dl class="meta">
+    <div><dt>Prepared</dt><dd>21 October 2026</dd></div>
+    <div><dt>Status</dt><dd><span class="pill">draft, to be discussed with the client first</span></dd></div>
+    <div><dt>For</dt><dd>The designer who will design the website and the editor interface</dd></div>
+    <div><dt>From</dt><dd>The developer (Khairou)</dd></div>
+  </dl>
+</div>
+
+<nav class="toc"><ol>
+  <li>1 What ArchPresent is</li><li>2 Who uses it</li><li>3 What we need from you</li>
+  <li>4 Principles and constraints</li><li>5 The screens</li><li>6 Three languages, right to left</li>
+  <li>7 How the app is styled today</li><li>8 Open design questions</li><li>9 Seeing the current app</li>
+  <li>10 How we will work</li><li>Appendix: the design tokens</li>
+</ol></nav>
+
+<h2><span class="n">01</span>What ArchPresent is</h2>
+<p class="lead">ArchPresent is a desktop web platform where architects, architecture students and design offices build print-ready presentations in about 15 minutes, instead of a week in Photoshop.</p>
+<ul>
+  <li>A <b>model</b> is a presentation of several pages (for example a student model of 3 pages, or a full model of 6 or 7). Each page is a Photoshop template that has been converted into a web-editable page.</li>
+  <li>The buyer opens a model in the <b>editor</b>, drops their photos into the zones of each page, edits the text, moves layers, and exports the result at full print resolution. Pages are very large (about 10000 x 7000 px), meant to print at A0.</li>
+  <li>Models are bought with <b>points</b>. Points are topped up by an administrator after the buyer pays the client off the platform. Until a model is bought, every page carries a watermark and cannot be exported.</li>
+  <li>The platform is built for Algeria: the interface is in <b>French (default), Arabic and English</b>, Arabic is laid out right to left, and bundles are priced in dinars (DA).</li>
+</ul>
+<p>The one thing it must do well is <b>speed</b>, without losing the quality needed to print at A0. The design should help a buyer finish a presentation quickly and never doubt what is happening to their work.</p>
+
+<h2><span class="n">02</span>Who uses it</h2>
+<table>
+  <tr><th style="width:24%">User</th><th>What they do</th><th style="width:30%">What worries them</th></tr>
+  <tr><td><b>Buyer</b><br>students, architects, offices</td><td>Browses models, fills a model with photos and text, reviews every page, buys it with points, exports and prints. All three groups follow the same path; only quality and price differ.</td><td>Print quality that looks fine on screen but pixelates at A0. Losing work to a power or internet cut (common in Algeria). Slow exports.</td></tr>
+  <tr><td><b>Admin</b><br>the client and the developer</td><td>Uploads Photoshop files, reviews and publishes designs, sets model prices, tops up and adjusts users' points.</td><td>A bad template going live. A wrong balance.</td></tr>
+  <tr><td><b>Designer</b><br>later</td><td>Outside designers who make templates and earn a commission. Not part of the first four months: please do not design for them now.</td><td>-</td></tr>
+</table>
+<p><b>Device:</b> desktop only. Phones and tablets are not supported on purpose, so there is no mobile design to make.</p>
+
+<h2><span class="n">03</span>What we need from you</h2>
+<ul>
+  <li><b>A visual design for the screens in section 5</b>, in light theme first (it is the main theme), then dark. Each screen in French, English and Arabic (right to left), with the states listed: empty, loading, error, signed out.</li>
+  <li><b>A brand identity</b> to the extent you think the product needs it: a logo, an accent color and the tone. Today there is only the name and a plain text wordmark.</li>
+  <li><b>Values for the design tokens</b> (appendix): fill the token table with your colors, type sizes, radii and spacing. The whole app takes its look from these names, so a new design is applied by changing the values, not by redoing every page.</li>
+  <li><b>Specs for the shared components</b>: buttons (solid, soft, ghost, disabled), form fields, tables, badges, notices, cards, dialogs, tabs and the language switcher.</li>
+  <li><b>A format we can work from.</b> A Figma file is ideal. Tell us what you prefer.</li>
+</ul>
+<div class="note"><b>Not needed:</b> mobile layouts, designer accounts, card payment screens, the AI features planned for later, or the converter (it has no screen). The canvas content itself (the architectural templates) is not part of the interface design.</div>
+
+<h2><span class="n">04</span>Principles and constraints</h2>
+<ul>
+  <li><b>The editor is the product.</b> It is a canvas tool: the page the buyer is working on must get as much room as possible. The interface around it should stay quiet.</li>
+  <li><b>Trust in the work.</b> The buyer must always see when their work is saved, what will print sharply and what will not, and how much a purchase costs before they press Buy.</li>
+  <li><b>Everything mirrors in Arabic.</b> Not only the text: the whole layout flips (navigation, panels, arrows, progress bars). The canvas does not flip, because it holds the buyer's design.</li>
+  <li><b>Long text.</b> French and Arabic strings are usually longer than English. Please test titles, buttons and table headers with the longer languages, and with long model names.</li>
+  <li><b>Print quality is a hard requirement.</b> The interface must make it clear when a photo is too small to print well at A0 (the editor shows a dpi estimate per photo, in green, orange or red).</li>
+  <li><b>Light is the main theme.</b> Dark follows the user's system setting. Both are supported by the tokens.</li>
+  <li><b>Fixed colors for zones.</b> The five zone colors (photo, plan, 3D model, text, logo) are drawn on top of the template art on the canvas and stay the same in both themes.</li>
+  <li><b>Speed of the interface.</b> The editor redraws a very large canvas on every edit, so avoid effects that cost performance (blurs, large shadows, continuous animation over the canvas).</li>
+</ul>
+
+<h2><span class="n">05</span>The screens</h2>
+<p>All screens exist today as a working but plain version, built on placeholder data with minimal style. The screenshots below are the current state, in light theme, to show what is there, not what it should look like.</p>
+<table>
+  <tr><th style="width:21%">Screen</th><th style="width:34%">Purpose</th><th>States to design</th></tr>
+  <tr><td><b>Home</b><br><span class="small">/</span></td><td>Marketing page: what the product does, how it works, open the editor.</td><td>Signed out and signed in header. Its copy is still the earlier generic text and will be rewritten.</td></tr>
+  <tr><td><b>Models gallery</b><br><span class="small">/models</span></td><td>Browse models: tier (student, architect, bureau), price in points, page count.</td><td>Empty (nothing published), owned vs not owned. Cards need a real preview image; today they show a plain placeholder. Previews will be watermarked.</td></tr>
+  <tr><td><b>Editor</b><br><span class="small">/editor?model=...</span></td><td>The main tool. See below.</td><td>Loading, error, selected layer, text selected, photo zone empty and filled, print-quality warnings, saving status.</td></tr>
+  <tr><td><b>Buy dialog</b></td><td>Review every page, then buy with points.</td><td>Signed out, not enough points (links to the wallet), pages not yet reviewed, ready to buy, error.</td></tr>
+  <tr><td><b>Export progress dialog</b></td><td>Shown while a full-resolution export runs: stage, progress bar, expected time.</td><td>Loading images, rendering, writing the file, done.</td></tr>
+  <tr><td><b>Sign in, create account</b><br><span class="small">/login, /signup</span></td><td>Email and password, and Google later.</td><td>Errors (missing field, passwords do not match).</td></tr>
+  <tr><td><b>Dashboard</b><br><span class="small">/dashboard</span></td><td>The buyer's home: balance, models owned, saved drafts (kept one month), recent points activity.</td><td>No drafts, no purchases, many items.</td></tr>
+  <tr><td><b>Wallet</b><br><span class="small">/wallet</span></td><td>Balance, the top-up bundles on offer (price in DA, points), and the full points history.</td><td>Empty history. Prices always show as <code>12000.00 DA</code>.</td></tr>
+  <tr><td><b>Admin</b><br><span class="small">/admin ...</span></td><td>Four tabs: templates on disk, models (tier, price, visibility), points (top-up and adjust a balance), conversion queue (with expected finish time).</td><td>Forms, dense tables, empty and error states. Used by two people, so efficiency matters more than polish.</td></tr>
+</table>
+
+<figure><img src="design-brief/home.jpg" alt="Home page"><figcaption>Home, signed in. The header carries the language switcher, the points balance and the account link.</figcaption></figure>
+
+<h3>The editor</h3>
+<p>The editor is one full-screen screen, not a website page. Today it has:</p>
+<ul>
+  <li><b>A top bar:</b> the product name, the model title with the page name in brackets ("Sample Model (Cover)"), the draft status ("Draft saved ..."), the language switcher, and the actions Apply, Export PNG and Export JPG.</li>
+  <li><b>The canvas</b> in the middle, scaled to fit, with a large arrow on each side to move between the pages of the model. The buyer's page is the largest thing on screen.</li>
+  <li><b>A layers panel</b> on one side, listing only the layers the buyer can edit. A row shows just a colored type badge (photo, plan, 3D model, logo, text) and a name. Selecting a row, or clicking its zone on the canvas, opens its actions: move up or down, fit or fill, upload, remove, the print-quality line for photos, and the text controls (content, font, size, bold, italic, color, alignment) for text. The panel was moved to the side to leave the canvas more room, and rows can be dragged to reorder.</li>
+  <li><b>Zone labels on the canvas:</b> each empty photo zone shows a colored label ("+ Photo: front"). A selected text shows a box and a resize handle.</li>
+  <li><b>A watermark</b> tiled across every unpaid page.</li>
+</ul>
+<figure><img src="design-brief/editor-en.jpg" alt="The editor in English"><figcaption>The editor in English with a photo layer selected.</figcaption></figure>
+<figure><img src="design-brief/editor-ar.jpg" alt="The editor in Arabic"><figcaption>The same screen in Arabic: the layout is mirrored (panel on the left, title on the right, arrows swapped) while the canvas is not.</figcaption></figure>
+<figure><img src="design-brief/buy-dialog.jpg" alt="The buy dialog"><figcaption>The buy dialog: every page must be looked at before Buy is enabled.</figcaption></figure>
+
+<div class="pair">
+  <figure><img src="design-brief/models.jpg" alt="Models gallery"><figcaption>Models gallery.</figcaption></figure>
+  <figure><img src="design-brief/dashboard.jpg" alt="Dashboard"><figcaption>Dashboard.</figcaption></figure>
+  <figure><img src="design-brief/wallet.jpg" alt="Wallet"><figcaption>Wallet, with the top-up bundles.</figcaption></figure>
+  <figure><img src="design-brief/admin-points.jpg" alt="Admin points"><figcaption>Admin, points tab.</figcaption></figure>
+</div>
+
+<h2><span class="n">06</span>Three languages, right to left</h2>
+<ul>
+  <li><b>French is the default.</b> A switcher (Français, العربية, English) is on every screen, and the choice is remembered.</li>
+  <li><b>Arabic mirrors the whole layout.</b> Navigation order, side panels, progress bars, back and next arrows and table columns all flip. Please design the Arabic version as its own layout, not only as translated text.</li>
+  <li><b>Digits are Western (0-9) in all three languages</b>, as used in Algeria.</li>
+  <li><b>Prices in DA</b> always show with two decimals and no thousands separator: <code>12000.00 DA</code>. Points show as <code>20,000 pts</code> and, in Arabic, <code>20,000 نقطة</code>.</li>
+  <li><b>Fonts.</b> The interface uses Geist for Latin text. Arabic text uses Cairo. Please propose the interface fonts you want (they must cover Latin and Arabic, and be free to embed). The buyer's own text on the canvas is chosen from seven bundled fonts (Inter, Montserrat, Barlow Condensed, Playfair Display, Cormorant Garamond, Cairo, Amiri) plus Arial; that list is content, not interface.</li>
+  <li>The interface text is in the app's message files and can be sent to you as a table if you want to design with the real wording.</li>
+</ul>
+
+<h2><span class="n">07</span>How the app is styled today</h2>
+<p>This matters because it decides what a design can ask for and how quickly it can be applied.</p>
+<ul>
+  <li>There is <b>no CSS framework</b>. Every color, size, radius and spacing comes from named <b>design tokens</b> in one file (<code>app/tokens.css</code>), with a light and a dark value for the colors. The Style Ledger page is generated from that file, so the token names and values are always documented.</li>
+  <li>The shared building blocks (buttons, fields, tables, cards, badges, notices) are defined once in <code>app/lib/ui.js</code>, built only from tokens.</li>
+  <li>Page layout is written in the page files themselves. A new design is applied by changing the token values and <code>ui.js</code>, and then adjusting the layout of the pages that differ.</li>
+  <li>Right-to-left works through <i>logical</i> properties (start and end instead of left and right), so a design that is specified with start and end maps directly.</li>
+  <li>Spacing, radii and font sizes come from fixed scales (appendix). A design that uses values outside the scales needs new tokens, which is fine, but please keep the scales small.</li>
+</ul>
+
+<h2><span class="n">08</span>Open design questions</h2>
+<div class="ask"><ul>
+  <li>Is there a brand (logo, colors) to follow, or do you propose one? None exists yet.</li>
+  <li>The accent color is currently a plain blue. Should it stay, given that five zone colors (blue, green, orange, violet, red) already appear on the canvas and the accent must not be confused with them?</li>
+  <li>How should a model's preview look in the gallery? The real previews will be the first page of the model with the watermark on top.</li>
+  <li>Does the platform need an icon set? There are almost no icons today (arrows and a few marks).</li>
+  <li>How dense should the admin screens be? They are used by two people to work fast.</li>
+  <li>The editor's side panel can be wide or narrow. How much room should the canvas get at 1280 and 1920 px wide?</li>
+</ul></div>
+
+<h2><span class="n">09</span>Seeing the current app</h2>
+<ul>
+  <li>The working app runs on a developer's machine. Ask the developer for a live session or a recorded walkthrough, or run it yourself: install Node.js, then in the <code>web</code> folder run <code>npm install</code> and <code>npm run dev</code>, and open <code>http://localhost:3000</code>.</li>
+  <li><b>Demo sign-in:</b> any email works. An email starting with <code>admin</code> signs in as an admin, and <code>buyer1@example.com</code> starts with 20,000 points. Everything behind the pages is a placeholder kept in the browser.</li>
+  <li><b>Editor:</b> open <code>/models</code> and choose "Preview in editor". The sample model has three pages.</li>
+  <li><b>Project documents</b> (ask the developer to share them): the Plan (what must be built and why), the Blueprint (how each part works), the Style Ledger and the Style Playground (every token and a live page of components), and the Backend Model.</li>
+</ul>
+
+<h2><span class="n">10</span>How we will work</h2>
+<ul>
+  <li>The client, an architect, sees and approves the design before it is built, so please plan a discussion with him.</li>
+  <li>The developer applies the approved design, screen by screen, through the tokens and the shared components, and shows each result for review.</li>
+  <li>The launch is planned around mid-February 2027, so the design needs to be settled well before then. Ask the developer for the schedule once the discussion with the client has happened.</li>
+</ul>
+
+<h2><span class="n">A</span>Appendix: the design tokens</h2>
+<p>These are the tokens the whole app is built from, with their current light and dark values. Fill the right-hand columns with your values and the design can be applied by changing them. The list is generated from the app's token file.</p>
+<!--TOKENS-->
+
+</body>
+</html>
